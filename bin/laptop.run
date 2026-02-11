@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# -*- mode: bash -*-
+
+set -eo pipefail
+[[ -n $DEBUG ]] && set -x
+
+main() {
+  repo_dir="$(dirname "${BASH_SOURCE[0]}")/.."
+  cd "$repo_dir"
+
+  if [[ $EUID -eq 0 ]] && [[ -n $SUDO_UID ]] && [[ $EUID -ne $SUDO_UID ]]; then
+    ## script was executed with sudo by non-root user, instruct them to re-run without sudo
+    echo >&2 "
+  Please re-run without sudo — we'll prompt for sudo permissions when we need them.
+  "
+    exit 1
+  fi
+
+  if ! sudo -n true &>/dev/null; then
+    echo >&2 'Prompting for sudo permissions...'
+    sudo -v
+  fi
+
+  ## sudo refresh trick via https://github.com/geerlingguy/dotfiles/blob/8489a049/.osx#L32
+  while true; do
+    sudo -n true
+    sleep 60
+    kill -0 "$$" || exit
+  done 2>/dev/null &
+
+  ## make `brew` available and all Homebrew-installed executables first in $PATH for subsequent steps
+  eval "$(PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}" brew shellenv)"
+  ensure_directory_permissions
+  ensure_ansible_using_homebrew
+  ensure_jq_using_homebrew
+  PATH="$(locate_ansible_python_bin):${PATH}"
+  ANSIBLE_PYTHON_INTERPRETER="$(command -v python3)"
+  export PATH ANSIBLE_PYTHON_INTERPRETER
+
+  ansible-playbook main.yml "$@"
+}
+
+retry() {
+  attempts=${ATTEMPTS:-5}
+  timeout=1
+  exit_code=0
+
+  [[ -n $DEBUG ]] && echo "Executing '${*}' with retries"
+  for i in $(seq 1 "${attempts}"); do
+    exit_code=0 # reset exit_code for each attempt
+    ("$@") && break || exit_code=$?
+
+    [[ -n $DEBUG ]] && echo "Command failed. Retrying in $timeout seconds..."
+    [[ $i == "${attempts}" ]] || sleep $timeout # dont sleep if failed after last attempt
+    timeout=$((timeout * 2))
+  done
+  [[ $exit_code == 0 ]] || exit $exit_code
+}
+
+ensure_ansible_using_homebrew() {
+  if ! command -v ansible | grep -qE "^${HOMEBREW_PREFIX}"; then
+    echo 'Installing Ansible via Homebrew...'
+    brew update
+    brew install ansible
+    brew link --overwrite ansible ## in case previously installed but not linked
+  fi
+}
+
+ensure_directory_permissions() {
+  ## workaround for recurring directory permission changes post-Sonoma upgrade
+  sudo chmod 0755 /opt /private/etc
+}
+
+ensure_jq_using_homebrew() {
+  if ! command -v jq &>/dev/null; then
+    echo 'Installing jq using Homebrew...'
+    brew install jq
+    brew link --overwrite jq
+  fi
+}
+
+locate_ansible_python_bin() {
+  local -r linked_python_version="$(
+    brew info --json ansible |
+      jq --raw-output --exit-status '.[0].dependencies[] | select(startswith("python@"))' |
+      head -1
+  )"
+  echo "$(brew --prefix "${linked_python_version}")/bin"
+}
+
+main "${@}"

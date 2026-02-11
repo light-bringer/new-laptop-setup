@@ -1,0 +1,122 @@
+---
+- name: Configure GitLab SSH authentication
+  block:
+    - name: Check for existing GitLab token
+      community.general.git_config:
+        name: 'gitlab.token'
+        scope: global
+      register: gitlab_token
+      ignore_errors: true
+
+    - name: Prompt for GitLab Personal Access Token
+      ansible.builtin.pause:
+        prompt: |
+          Enter your GitLab Personal Access Token (PAT).
+          Create one at: https://gitlab.com/-/profile/personal_access_tokens
+          Required scopes: api, read_user, write_repository
+      register: gitlab_token_prompt
+      when: gitlab_token.config_value is not defined or gitlab_token.config_value == ''
+
+    - name: Save GitLab token to git config
+      community.general.git_config:
+        name: 'gitlab.token'
+        value: "{{ gitlab_token_prompt.user_input }}"
+        scope: global
+      when: gitlab_token_prompt.user_input is defined
+
+    - name: Set token fact
+      ansible.builtin.set_fact:
+        gl_token: "{{ gitlab_token.config_value | default(gitlab_token_prompt.user_input) }}"
+
+    - name: Prompt for GitLab username
+      ansible.builtin.pause:
+        prompt: 'Enter your GitLab username'
+      register: gitlab_username_prompt
+
+    - name: Prompt for GitLab email
+      ansible.builtin.pause:
+        prompt: 'Enter your GitLab email'
+      register: gitlab_email_prompt
+
+    - name: Save GitLab username and email to git config
+      community.general.git_config:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        scope: global
+      loop:
+        - { key: 'gitlab.username', value: "{{ gitlab_username_prompt.user_input }}" }
+        - { key: 'gitlab.email', value: "{{ gitlab_email_prompt.user_input }}" }
+
+    - name: Fetch GitLab SSH keys (RSA)
+      ansible.builtin.command: ssh-keyscan -t rsa gitlab.com
+      register: gitlab_keyscan_rsa
+      retries: 3
+      delay: 3
+      until: gitlab_keyscan_rsa.rc == 0
+      changed_when: false
+
+    - name: Fetch GitLab SSH keys (ED25519)
+      ansible.builtin.command: ssh-keyscan -t ed25519 gitlab.com
+      register: gitlab_keyscan_ed25519
+      retries: 3
+      delay: 3
+      until: gitlab_keyscan_ed25519.rc == 0
+      changed_when: false
+
+    - name: Add GitLab keys to known_hosts
+      ansible.builtin.known_hosts:
+        name: 'gitlab.com'
+        key: "{{ item }}"
+      loop:
+        - "{{ gitlab_keyscan_rsa.stdout }}"
+        - "{{ gitlab_keyscan_ed25519.stdout }}"
+
+    - name: Find SSH public key
+      ansible.builtin.shell: |
+        for key in id_ed25519 id_rsa id_ecdsa; do
+          if [ -f ~/.ssh/${key}.pub ]; then
+            cat ~/.ssh/${key}.pub
+            exit 0
+          fi
+        done
+      register: ssh_pub_key
+      changed_when: false
+
+    - name: Check existing SSH keys via GitLab API
+      ansible.builtin.uri:
+        url: https://gitlab.com/api/v4/user/keys
+        method: GET
+        headers:
+          PRIVATE-TOKEN: "{{ gl_token }}"
+        return_content: yes
+      register: gitlab_keys_response
+
+    - name: Extract key content for comparison
+      ansible.builtin.set_fact:
+        ssh_key_fingerprint: "{{ ssh_pub_key.stdout.split()[0:2] | join(' ') }}"
+
+    - name: Upload SSH key if not present
+      ansible.builtin.uri:
+        url: https://gitlab.com/api/v4/user/keys
+        method: POST
+        headers:
+          PRIVATE-TOKEN: "{{ gl_token }}"
+        body_format: json
+        body:
+          title: "engineering-laptop-setup - {{ ansible_hostname }}"
+          key: "{{ ssh_pub_key.stdout }}"
+        status_code: [201, 400]
+      when: ssh_key_fingerprint not in gitlab_keys_response.content
+      register: upload_result
+
+    - name: Configure Git to use SSH for GitLab
+      community.general.git_config:
+        name: 'url.ssh://git@gitlab.com/.insteadOf'
+        value: 'https://gitlab.com/'
+        scope: global
+
+    - name: Verify SSH connection to GitLab
+      ansible.builtin.shell: ssh -T git@gitlab.com 2>&1
+      register: gitlab_ssh_verify
+      changed_when: false
+      failed_when: '"Welcome to GitLab" not in gitlab_ssh_verify.stdout'

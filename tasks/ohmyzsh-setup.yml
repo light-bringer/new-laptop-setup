@@ -1,0 +1,66 @@
+---
+- name: Install and configure Oh My Zsh
+  block:
+    - name: Check if Oh My Zsh is already installed
+      ansible.builtin.stat:
+        path: '{{ ansible_env.HOME }}/.oh-my-zsh'
+      register: ohmyzsh_stat
+
+    - name: Download and install Oh My Zsh
+      ansible.builtin.shell: |
+        RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      when: not ohmyzsh_stat.stat.exists
+
+    - name: Check for existing Oh My Zsh theme configuration
+      ansible.builtin.shell: grep '^ZSH_THEME=' {{ ansible_env.HOME }}/.zshrc || echo 'ZSH_THEME="robbyrussell"'
+      register: current_theme
+      changed_when: false
+      failed_when: false
+
+    - name: Prompt for Oh My Zsh theme selection
+      ansible.builtin.pause:
+        prompt: |
+          Choose an Oh My Zsh theme (press Enter for default):
+          1. robbyrussell (default - simple, clean)
+          2. agnoster (powerline-style, needs patched fonts)
+          3. powerlevel10k (feature-rich, needs patched fonts)
+          4. pure (minimal, elegant)
+          Enter your choice (1-4) or press Enter for default
+      register: theme_choice
+      when: not ohmyzsh_stat.stat.exists
+
+    - name: Set theme based on user choice
+      ansible.builtin.set_fact:
+        selected_theme: "{{ theme_map[theme_choice.user_input | default('1')] | default('robbyrussell') }}"
+      vars:
+        theme_map:
+          '1': 'robbyrussell'
+          '2': 'agnoster'
+          '3': 'powerlevel10k/powerlevel10k'
+          '4': 'refined'
+          '': 'robbyrussell'
+      when: not ohmyzsh_stat.stat.exists
+
+    - name: Configure Oh My Zsh theme
+      ansible.builtin.lineinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc'
+        regexp: '^ZSH_THEME='
+        line: 'ZSH_THEME="{{ selected_theme | default("robbyrussell") }}"'
+      when: not ohmyzsh_stat.stat.exists
+
+    - name: Configure Oh My Zsh plugins
+      ansible.builtin.lineinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc'
+        regexp: '^plugins='
+        line: 'plugins=(git brew docker kubectl)'
+
+    - name: Ensure .zshrc sources .zprofile for brew shellenv
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Source .zprofile"
+        insertbefore: '^source \$ZSH/oh-my-zsh.sh'
+        block: |
+          # Source .zprofile to ensure Homebrew is in PATH
+          if [ -f ~/.zprofile ]; then
+            source ~/.zprofile
+          fi

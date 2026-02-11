@@ -1,0 +1,42 @@
+---
+- name: Manage dotfiles
+  block:
+    - name: Create .config directory
+      ansible.builtin.file:
+        path: '{{ ansible_env.HOME }}/.config'
+        state: directory
+        mode: '0755'
+
+    - name: Symlink global gitignore
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/.gitignore_global'
+        dest: '{{ ansible_env.HOME }}/.gitignore_global'
+        state: link
+        force: yes
+
+    - name: Configure git to use global gitignore
+      community.general.git_config:
+        name: 'core.excludesfile'
+        value: '~/.gitignore_global'
+        scope: global
+
+    - name: Symlink vim configuration
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/.vimrc'
+        dest: '{{ ansible_env.HOME }}/.vimrc'
+        state: link
+        force: yes
+
+    - name: Symlink tmux configuration
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/.tmux.conf'
+        dest: '{{ ansible_env.HOME }}/.tmux.conf'
+        state: link
+        force: yes
+
+    - name: Symlink editorconfig
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/.editorconfig'
+        dest: '{{ ansible_env.HOME }}/.editorconfig'
+        state: link
+        force: yes

@@ -1,0 +1,16 @@
+---
+- name: Install common development tools
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - git
+    - jq
+    - curl
+    - wget
+    - tree
+    - htop
+    - ripgrep
+    - fzf
+    - tmux
+    - vim

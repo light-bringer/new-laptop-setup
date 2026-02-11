@@ -1,0 +1,45 @@
+---
+- hosts: local
+  connection: local
+  roles:
+    - role: elliotweiser.osx-command-line-tools
+      tags: [cli-tools]
+    - role: geerlingguy.mac.homebrew
+      tags: [homebrew]
+      vars:
+        homebrew_installed_packages:
+          - git
+          - jq
+
+  tasks:
+    - name: Generate SSH keys if needed
+      import_tasks: tasks/ssh-key.yml
+      tags: [ssh]
+
+    - name: Configure Zsh with brew shellenv
+      import_tasks: tasks/zsh-config.yml
+      tags: [zsh]
+
+    - name: Install Oh My Zsh
+      import_tasks: tasks/ohmyzsh-setup.yml
+      tags: [ohmyzsh]
+
+    - name: Symlink dotfiles
+      import_tasks: tasks/dotfiles.yml
+      tags: [dotfiles]
+
+    - name: Configure Git user settings
+      import_tasks: tasks/git-config.yml
+      tags: [git]
+
+    - name: Set up GitHub SSH authentication
+      import_tasks: tasks/github-setup.yml
+      tags: [github]
+
+    - name: Set up GitLab SSH authentication
+      import_tasks: tasks/gitlab-setup.yml
+      tags: [gitlab]
+
+    - name: Install common development tools
+      import_tasks: tasks/dev-tools.yml
+      tags: [dev-tools]

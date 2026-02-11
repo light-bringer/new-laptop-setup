@@ -1,0 +1,42 @@
+---
+- name: Configure Git user settings
+  block:
+    - name: Check for existing git user.name
+      community.general.git_config:
+        name: user.name
+        scope: global
+      register: git_user_name
+      ignore_errors: true
+
+    - name: Prompt for Git user name
+      ansible.builtin.pause:
+        prompt: 'Enter your full name for Git commits (e.g., John Doe)'
+      register: git_name_prompt
+      when: git_user_name.config_value is not defined or git_user_name.config_value == ''
+
+    - name: Set git user.name
+      community.general.git_config:
+        name: user.name
+        value: "{{ git_name_prompt.user_input }}"
+        scope: global
+      when: git_name_prompt.user_input is defined
+
+    - name: Check for existing git user.email
+      community.general.git_config:
+        name: user.email
+        scope: global
+      register: git_user_email
+      ignore_errors: true
+
+    - name: Prompt for Git user email
+      ansible.builtin.pause:
+        prompt: 'Enter your email for Git commits (e.g., john@example.com)'
+      register: git_email_prompt
+      when: git_user_email.config_value is not defined or git_user_email.config_value == ''
+
+    - name: Set git user.email
+      community.general.git_config:
+        name: user.email
+        value: "{{ git_email_prompt.user_input }}"
+        scope: global
+      when: git_email_prompt.user_input is defined

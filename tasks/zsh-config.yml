@@ -1,0 +1,19 @@
+---
+- name: Configure Zsh with brew shellenv
+  block:
+    - name: Determine Homebrew installation path
+      ansible.builtin.command: brew --prefix
+      register: brew_prefix
+      changed_when: false
+
+    - name: Configure $HOME/.zprofile with brew shellenv
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zprofile'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Homebrew"
+        block: |
+          # Configure Homebrew
+          if [ -x "{{ brew_prefix.stdout }}/bin/brew" ]; then
+            eval "$("{{ brew_prefix.stdout }}/bin/brew" shellenv)"
+          fi

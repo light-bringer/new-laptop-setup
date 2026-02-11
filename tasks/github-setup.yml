@@ -1,0 +1,128 @@
+---
+- name: Configure GitHub SSH authentication
+  block:
+    - name: Check for existing GitHub token
+      community.general.git_config:
+        name: 'github.token'
+        scope: global
+      register: github_token
+      ignore_errors: true
+
+    - name: Prompt for GitHub Personal Access Token
+      ansible.builtin.pause:
+        prompt: |
+          Enter your GitHub Personal Access Token (PAT).
+          Create one at: https://github.com/settings/tokens
+          Required scopes: admin:public_key, read:user, repo
+      register: github_token_prompt
+      when: github_token.config_value is not defined or github_token.config_value == ''
+
+    - name: Save GitHub token to git config
+      community.general.git_config:
+        name: 'github.token'
+        value: "{{ github_token_prompt.user_input }}"
+        scope: global
+      when: github_token_prompt.user_input is defined
+
+    - name: Set token fact
+      ansible.builtin.set_fact:
+        gh_token: "{{ github_token.config_value | default(github_token_prompt.user_input) }}"
+
+    - name: Prompt for GitHub username
+      ansible.builtin.pause:
+        prompt: 'Enter your GitHub username'
+      register: github_username_prompt
+
+    - name: Prompt for GitHub email
+      ansible.builtin.pause:
+        prompt: 'Enter your GitHub email'
+      register: github_email_prompt
+
+    - name: Save GitHub username and email to git config
+      community.general.git_config:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        scope: global
+      loop:
+        - { key: 'github.username', value: "{{ github_username_prompt.user_input }}" }
+        - { key: 'github.email', value: "{{ github_email_prompt.user_input }}" }
+
+    - name: Fetch GitHub SSH keys (RSA)
+      ansible.builtin.command: ssh-keyscan -t rsa github.com
+      register: github_keyscan_rsa
+      retries: 3
+      delay: 3
+      until: github_keyscan_rsa.rc == 0
+      changed_when: false
+
+    - name: Fetch GitHub SSH keys (ED25519)
+      ansible.builtin.command: ssh-keyscan -t ed25519 github.com
+      register: github_keyscan_ed25519
+      retries: 3
+      delay: 3
+      until: github_keyscan_ed25519.rc == 0
+      changed_when: false
+
+    - name: Add GitHub keys to known_hosts
+      ansible.builtin.known_hosts:
+        name: 'github.com'
+        key: "{{ item }}"
+      loop:
+        - "{{ github_keyscan_rsa.stdout }}"
+        - "{{ github_keyscan_ed25519.stdout }}"
+
+    - name: Find SSH public key
+      ansible.builtin.shell: |
+        for key in id_ed25519 id_rsa id_ecdsa; do
+          if [ -f ~/.ssh/${key}.pub ]; then
+            cat ~/.ssh/${key}.pub
+            exit 0
+          fi
+        done
+      register: ssh_pub_key
+      changed_when: false
+
+    - name: Check existing SSH keys via GitHub API
+      ansible.builtin.uri:
+        url: https://api.github.com/user/keys
+        method: GET
+        headers:
+          Authorization: "token {{ gh_token }}"
+          Accept: "application/vnd.github.v3+json"
+        return_content: yes
+      register: github_keys_response
+
+    - name: Extract key content for comparison
+      ansible.builtin.set_fact:
+        ssh_key_content: "{{ ssh_pub_key.stdout.split()[0:2] | join(' ') }}"
+
+    - name: Parse existing keys
+      ansible.builtin.set_fact:
+        existing_keys: "{{ github_keys_response.json | map(attribute='key') | list }}"
+
+    - name: Upload SSH key if not present
+      ansible.builtin.uri:
+        url: https://api.github.com/user/keys
+        method: POST
+        headers:
+          Authorization: "token {{ gh_token }}"
+          Accept: "application/vnd.github.v3+json"
+        body_format: json
+        body:
+          title: "engineering-laptop-setup - {{ ansible_hostname }}"
+          key: "{{ ssh_pub_key.stdout }}"
+        status_code: [201, 422]
+      when: ssh_key_content not in (existing_keys | join(' '))
+      register: upload_result
+
+    - name: Configure Git to use SSH for GitHub
+      community.general.git_config:
+        name: 'url.ssh://git@github.com/.insteadOf'
+        value: 'https://github.com/'
+        scope: global
+
+    - name: Verify SSH connection to GitHub
+      ansible.builtin.shell: ssh -T git@github.com 2>&1
+      register: github_ssh_verify
+      changed_when: false
+      failed_when: '"successfully authenticated" not in github_ssh_verify.stderr'

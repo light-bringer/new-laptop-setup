@@ -1,0 +1,53 @@
+---
+- name: Install and configure NVM (Node Version Manager)
+  block:
+    - name: Check if NVM is already installed
+      ansible.builtin.stat:
+        path: '{{ ansible_env.HOME }}/.nvm'
+      register: nvm_stat
+
+    - name: Download and install NVM
+      ansible.builtin.shell: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      when: not nvm_stat.stat.exists
+
+    - name: Configure NVM in .zshrc
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - NVM"
+        block: |
+          # NVM configuration
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+    - name: Install latest LTS version of Node.js
+      ansible.builtin.shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install --lts
+        nvm use --lts
+        nvm alias default 'lts/*'
+      args:
+        executable: /bin/bash
+        creates: '{{ ansible_env.HOME }}/.nvm/versions/node'
+      register: nvm_install_node
+
+    - name: Display installed Node.js version
+      ansible.builtin.shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        node --version
+        npm --version
+      args:
+        executable: /bin/bash
+      register: node_version
+      changed_when: false
+      failed_when: false
+
+    - name: Show Node.js and npm versions
+      ansible.builtin.debug:
+        msg: "{{ node_version.stdout_lines }}"
+      when: node_version.rc == 0

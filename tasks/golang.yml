@@ -1,0 +1,40 @@
+---
+- name: Install and configure Go
+  block:
+    - name: Install Go via Homebrew
+      community.general.homebrew:
+        name: go
+        state: present
+
+    - name: Check for existing GOPATH configuration
+      ansible.builtin.shell: grep -q 'export GOPATH=' {{ ansible_env.HOME }}/.zshenv || echo 'not_found'
+      register: gopath_check
+      changed_when: false
+      failed_when: false
+
+    - name: Configure GOPATH in .zshenv
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zshenv'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Go"
+        block: |
+          # Go environment
+          export GOPATH="${HOME}/go"
+          export PATH="${GOPATH}/bin:${PATH}"
+      when: "'not_found' in gopath_check.stdout"
+
+    - name: Create GOPATH directory
+      ansible.builtin.file:
+        path: '{{ ansible_env.HOME }}/go'
+        state: directory
+        mode: '0755'
+
+    - name: Verify Go installation
+      ansible.builtin.command: go version
+      register: go_version
+      changed_when: false
+
+    - name: Display Go version
+      ansible.builtin.debug:
+        msg: "Go installed: {{ go_version.stdout }}"

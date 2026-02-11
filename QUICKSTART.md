@@ -99,6 +99,8 @@ echo $ZSH
 - Homebrew, Ansible, git, jq
 - curl, wget, tree, htop
 - ripgrep, fzf, tmux, vim
+- Go programming language
+- NVM with Node.js LTS and npm
 
 ### Shell
 - Oh My Zsh with plugins: git, brew, docker, kubectl

@@ -91,6 +91,11 @@ Symlinked from `dotfiles/` directory:
 - tmux
 - vim
 
+#### Programming Languages & Tools
+- Go programming language with GOPATH configured
+- NVM (Node Version Manager) with latest LTS Node.js
+- npm (comes with Node.js)
+
 ### Required User Input
 
 During the setup, you'll be prompted for:
@@ -147,6 +152,8 @@ Run only specific components:
 - `github` - GitHub SSH setup
 - `gitlab` - GitLab SSH setup
 - `dev-tools` - Development tools
+- `golang` / `go` - Go programming language
+- `nvm` / `node` / `nodejs` - NVM and Node.js
 
 ### Dry Run
 
@@ -224,6 +231,21 @@ which laptop.update laptop.upgrade
 jq --version
 rg --version
 fzf --version
+```
+
+### 11. Check Go Installation
+```bash
+go version
+echo $GOPATH
+# Should show Go version and GOPATH set to ~/go
+```
+
+### 12. Check NVM and Node.js
+```bash
+nvm --version
+node --version
+npm --version
+# Should show installed versions
 ```
 
 ## Troubleshooting

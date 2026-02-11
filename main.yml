@@ -43,3 +43,11 @@
     - name: Install common development tools
       import_tasks: tasks/dev-tools.yml
       tags: [dev-tools]
+
+    - name: Install and configure Go
+      import_tasks: tasks/golang.yml
+      tags: [golang, go]
+
+    - name: Install and configure NVM
+      import_tasks: tasks/nvm.yml
+      tags: [nvm, node, nodejs]

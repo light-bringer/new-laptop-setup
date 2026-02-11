@@ -66,6 +66,8 @@ ansible-playbook main.yml --syntax-check
   - **github-setup.yml**: GitHub SSH authentication via API
   - **gitlab-setup.yml**: GitLab SSH authentication via API
   - **dev-tools.yml**: Common development tools via Homebrew
+  - **golang.yml**: Go installation and GOPATH configuration
+  - **nvm.yml**: NVM installation with latest LTS Node.js
 - **dotfiles/**: Example dotfiles to symlink
   - **.gitignore_global**: Global gitignore patterns
   - **.vimrc**: Vim configuration
@@ -88,6 +90,8 @@ Defined in `main.yml`:
 8. **tasks/github-setup.yml**: GitHub SSH authentication and key upload
 9. **tasks/gitlab-setup.yml**: GitLab SSH authentication and key upload
 10. **tasks/dev-tools.yml**: Install development tools
+11. **tasks/golang.yml**: Install Go and configure GOPATH
+12. **tasks/nvm.yml**: Install NVM and latest LTS Node.js
 
 ## GitHub/GitLab Integration
 

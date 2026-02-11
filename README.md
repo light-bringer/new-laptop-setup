@@ -12,6 +12,8 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 🦊 **GitLab** SSH authentication
 - ⚙️ **Git** user configuration
 - 🛠️ **Development tools** (jq, curl, wget, tree, htop, ripgrep, fzf)
+- 🐹 **Go** programming language with GOPATH configuration
+- 📦 **NVM** (Node Version Manager) with latest LTS Node.js
 - 🔄 **Update scripts** for easy maintenance (laptop.update, laptop.upgrade)
 
 ## Quick Start
@@ -61,6 +63,12 @@ Run only specific components using Ansible tags:
 # Dotfiles symlinking only
 ./bin/laptop.run --tags dotfiles
 
+# Go installation only
+./bin/laptop.run --tags golang
+
+# NVM and Node.js installation only
+./bin/laptop.run --tags nvm
+
 # Multiple tags
 ./bin/laptop.run --tags ssh,git,github
 
@@ -80,6 +88,8 @@ Run only specific components using Ansible tags:
 - `github` - GitHub SSH setup
 - `gitlab` - GitLab SSH setup
 - `dev-tools` - Development tools
+- `golang` / `go` - Go programming language
+- `nvm` / `node` / `nodejs` - NVM and Node.js
 
 ## Preview Changes
 
@@ -149,7 +159,9 @@ new-laptop-setup/
 │   ├── git-config.yml       # Git user configuration
 │   ├── github-setup.yml     # GitHub SSH setup
 │   ├── gitlab-setup.yml     # GitLab SSH setup
-│   └── dev-tools.yml        # Development tools
+│   ├── dev-tools.yml        # Development tools
+│   ├── golang.yml           # Go installation and configuration
+│   └── nvm.yml              # NVM and Node.js installation
 ├── dotfiles/                 # Example dotfiles to symlink
 │   ├── .gitignore_global
 │   ├── .vimrc

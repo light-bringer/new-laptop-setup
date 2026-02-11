@@ -18,7 +18,7 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 📦 **NVM** (Node Version Manager) with latest LTS Node.js
 - ⚡ **pnpm** - Fast, disk space efficient package manager
 - 🐍 **Python 3.12** with pip, pipx, and virtualenv
-- 🖥️ **GUI Applications** - Docker Desktop, VSCode, iTerm2, Chrome, Slack, Postman, and more
+- 🖥️ **GUI Applications** - Docker Desktop (default), VSCode, iTerm2, Chrome, Slack, Postman (optional)
 - 🔄 **Update scripts** for easy maintenance (laptop.update, laptop.upgrade)
 
 ## Quick Start
@@ -53,9 +53,18 @@ laptop.upgrade
 Some components are not installed by default and must be explicitly requested:
 
 ```bash
-# Install Claude Code CLI (not installed by default)
+# Install Claude Code CLI
 ./bin/laptop.run --tags claude-code
+
+# Install optional GUI applications (VSCode, Chrome, Slack, etc.)
+./bin/laptop.run --tags gui-optional
+
+# Install specific apps
+./bin/laptop.run --tags vscode,chrome,slack
 ```
+
+**What's installed by default**: Docker Desktop
+**What's optional**: VSCode, iTerm2, Chrome, Firefox, Slack, Postman, Notion, TablePlus, Figma, Insomnia, Rectangle
 
 ## Selective Execution
 
@@ -126,7 +135,12 @@ Run only specific components using Ansible tags:
 - Individual app tags: `docker`, `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
 
 **Optional (not installed by default)**:
-- `claude-code` / `claude` - Claude Code CLI (requires explicit `--tags claude-code`)
+- `claude-code` / `claude` - Claude Code CLI
+- `gui-optional` - All optional GUI apps (VSCode, Chrome, Slack, etc.)
+- Individual apps: `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
+
+**Installed by default**:
+- `docker` - Docker Desktop only
 
 ## Preview Changes
 

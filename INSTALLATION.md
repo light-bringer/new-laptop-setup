@@ -101,13 +101,20 @@ Symlinked from `dotfiles/` directory:
 - Python 3.12 with pip, pipx, and virtualenv
 
 #### GUI Applications
-**Development**: Docker Desktop, Visual Studio Code, iTerm2
-**Browsers**: Google Chrome, Firefox
-**API Tools**: Postman, Insomnia
-**Database**: TablePlus
-**Communication**: Slack
-**Productivity**: Notion, Rectangle (window manager)
-**Design**: Figma
+
+**Installed by Default**:
+- Docker Desktop - Container platform
+
+**Optional (not installed by default)**:
+Install with: `./bin/laptop.run --tags gui-optional` or individual tags
+
+- **Development**: Visual Studio Code, iTerm2
+- **Browsers**: Google Chrome, Firefox
+- **API Tools**: Postman, Insomnia
+- **Database**: TablePlus
+- **Communication**: Slack
+- **Productivity**: Notion, Rectangle (window manager)
+- **Design**: Figma
 
 #### Optional Tools (Not Installed by Default)
 - **Claude Code CLI** - Anthropic's AI coding assistant
@@ -182,6 +189,8 @@ Run only specific components:
 
 **Optional (not installed by default)**:
 - `claude-code` / `claude` - Claude Code CLI
+- `gui-optional` - All optional GUI apps
+- Individual apps: `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
 
 ### Dry Run
 

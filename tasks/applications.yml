@@ -1,11 +1,15 @@
 ---
-- name: Install GUI applications via Homebrew Cask
+# Docker Desktop - Installed by default
+- name: Install Docker Desktop
+  community.general.homebrew_cask:
+    name: docker
+    state: present
+  tags: [docker]
+
+# Optional GUI applications - NOT installed by default
+# Install with: ./bin/laptop.run --tags gui-optional
+- name: Install optional GUI applications
   block:
-    - name: Install Docker Desktop
-      community.general.homebrew_cask:
-        name: docker
-        state: present
-      tags: [docker]
 
     - name: Install Visual Studio Code
       community.general.homebrew_cask:
@@ -73,6 +77,7 @@
         state: present
       tags: [insomnia]
 
-    - name: Display installed applications
+    - name: Display installed optional applications
       ansible.builtin.debug:
-        msg: "GUI applications installed successfully via Homebrew Cask"
+        msg: "Optional GUI applications installed successfully via Homebrew Cask"
+  tags: [never, gui-optional]

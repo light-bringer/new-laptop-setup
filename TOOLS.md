@@ -4,8 +4,14 @@ This document lists all tools and applications installed by this setup.
 
 ## 🖥️ GUI Applications (Homebrew Cask)
 
-### Development Tools
+### Installed by Default
 - **Docker Desktop** - Container platform for building and running applications
+
+### Optional (Not Installed by Default)
+
+Install with: `./bin/laptop.run --tags gui-optional` or individual tags like `--tags vscode,chrome`
+
+#### Development Tools
 - **Visual Studio Code** - Modern code editor with extensions
 - **iTerm2** - Better terminal emulator for macOS
 
@@ -304,10 +310,16 @@ Located in `bin/` directory:
 ./bin/laptop.run --tags applications
 ```
 
-### Install Specific Applications
+### Install GUI Applications
 ```bash
-# Just Docker and VSCode
-./bin/laptop.run --tags docker,vscode
+# Docker only (installed by default)
+./bin/laptop.run --tags docker
+
+# All optional GUI apps
+./bin/laptop.run --tags gui-optional
+
+# Specific optional apps
+./bin/laptop.run --tags vscode,chrome,slack
 
 # Just browsers
 ./bin/laptop.run --tags chrome,firefox

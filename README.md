@@ -11,6 +11,7 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 🐙 **GitHub** SSH authentication
 - 🦊 **GitLab** SSH authentication
 - ⚙️ **Git** user configuration
+- 🚀 **goto** - Custom shell function for quick GitHub repository navigation
 - 🛠️ **CLI Development tools** (50+ tools including git, jq, curl, kubectl, terraform, awscli)
 - 🐹 **Go** programming language with GOPATH configuration
 - 📦 **NVM** (Node Version Manager) with latest LTS Node.js

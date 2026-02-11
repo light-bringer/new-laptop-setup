@@ -162,6 +162,7 @@ Run only specific components:
 - `ohmyzsh` - Oh My Zsh installation
 - `dotfiles` - Dotfiles symlinking
 - `git` - Git user configuration
+- `goto` - goto shell function
 - `github` - GitHub SSH setup
 - `gitlab` - GitLab SSH setup
 - `dev-tools` - Development tools

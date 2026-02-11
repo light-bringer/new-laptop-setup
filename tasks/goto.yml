@@ -1,0 +1,91 @@
+---
+- name: Install goto shell function
+  block:
+    - name: Prompt for default GitHub username
+      ansible.builtin.pause:
+        prompt: 'Enter your default GitHub username for goto function (e.g., light-bringer)'
+      register: goto_user_prompt
+
+    - name: Prompt for goto root directory
+      ansible.builtin.pause:
+        prompt: 'Enter the root directory for repositories (press Enter for default: ~/dev/src)'
+      register: goto_root_prompt
+
+    - name: Set goto default values
+      ansible.builtin.set_fact:
+        goto_default_user: "{{ goto_user_prompt.user_input }}"
+        goto_root: "{{ goto_root_prompt.user_input | default('~/dev/src', true) }}"
+
+    - name: Create goto root directory
+      ansible.builtin.file:
+        path: "{{ goto_root | regex_replace('^~', ansible_env.HOME) }}/github.com"
+        state: directory
+        mode: '0755'
+
+    - name: Install goto function in .zshrc
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - goto function"
+        block: |
+          # goto - Quick navigation to GitHub repositories
+          export GOTO_ROOT="{{ goto_root }}"
+          export GOTO_DEFAULT_USER="{{ goto_default_user }}"
+
+          goto() {
+            local input=$1
+            local user
+            local repo
+            local target_dir
+            local git_url
+
+            if [[ -z "$input" ]]; then
+              echo "Usage: goto <project> OR goto <user>/<project>"
+              return 1
+            fi
+
+            if [[ "$input" == *"/"* ]]; then
+              user=${input%%/*}
+              repo=${input#*/}
+            else
+              user=$GOTO_DEFAULT_USER
+              repo=$input
+            fi
+
+            target_dir="$GOTO_ROOT/github.com/$user/$repo"
+
+            if [[ -d "$target_dir" ]]; then
+              echo "🚀 Jumping to existing directory: $target_dir"
+              cd "$target_dir"
+              return 0
+            fi
+
+            echo "📂 Directory not found. Preparing to clone..."
+            mkdir -p "$(dirname "$target_dir")"
+
+            git_url="git@github.com:$user/$repo.git"
+            echo "⬇️  Cloning $git_url..."
+
+            if git clone "$git_url" "$target_dir"; then
+              echo "✅ Clone successful! Entering directory..."
+              cd "$target_dir"
+            else
+              echo "❌ Clone failed. Please check the repository name and your permissions."
+              rmdir "$target_dir" 2>/dev/null
+              return 1
+            fi
+          }
+
+    - name: Display goto installation message
+      ansible.builtin.debug:
+        msg:
+          - "goto function installed successfully!"
+          - "Default user: {{ goto_default_user }}"
+          - "Root directory: {{ goto_root }}"
+          - ""
+          - "Usage examples:"
+          - "  goto my-repo           # Clones/navigates to {{ goto_default_user }}/my-repo"
+          - "  goto octocat/Hello-World  # Clones/navigates to octocat/Hello-World"
+          - ""
+          - "Restart your shell or run: source ~/.zshrc"

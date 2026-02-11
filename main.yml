@@ -32,6 +32,10 @@
       import_tasks: tasks/git-config.yml
       tags: [git]
 
+    - name: Install goto shell function
+      import_tasks: tasks/goto.yml
+      tags: [goto]
+
     - name: Set up GitHub SSH authentication
       import_tasks: tasks/github-setup.yml
       tags: [github]

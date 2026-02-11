@@ -95,14 +95,27 @@ echo $ZSH
 
 ## What Gets Installed
 
-### Tools
-- Homebrew, Ansible, git, jq
-- curl, wget, tree, htop
-- ripgrep, fzf, tmux, vim
-- Go programming language
-- NVM with Node.js LTS and npm
-- pnpm package manager
-- Python 3.12 with pip, pipx, and virtualenv
+### CLI Tools (50+)
+- Homebrew, Ansible, git, gh, git-lfs
+- jq, yq, curl, wget, httpie
+- tree, htop, ripgrep, fzf, bat
+- vim, neovim, tmux
+- kubectl, helm, terraform, awscli
+- postgresql, mysql, redis
+- And many more...
+
+### Programming Languages
+- Go with GOPATH
+- Node.js LTS via NVM
+- npm, pnpm
+- Python 3.12 with pip, pipx, virtualenv
+
+### GUI Applications
+- Docker Desktop, VSCode, iTerm2
+- Chrome, Firefox
+- Slack, Postman, Insomnia
+- Notion, TablePlus, Figma
+- Rectangle (window manager)
 
 ### Shell
 - Oh My Zsh with plugins: git, brew, docker, kubectl

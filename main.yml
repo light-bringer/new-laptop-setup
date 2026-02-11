@@ -59,3 +59,7 @@
     - name: Install and configure Python
       import_tasks: tasks/python.yml
       tags: [python, py]
+
+    - name: Install GUI applications
+      import_tasks: tasks/applications.yml
+      tags: [applications, apps, gui]

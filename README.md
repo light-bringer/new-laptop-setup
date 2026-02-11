@@ -11,11 +11,12 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 🐙 **GitHub** SSH authentication
 - 🦊 **GitLab** SSH authentication
 - ⚙️ **Git** user configuration
-- 🛠️ **Development tools** (jq, curl, wget, tree, htop, ripgrep, fzf)
+- 🛠️ **CLI Development tools** (50+ tools including git, jq, curl, kubectl, terraform, awscli)
 - 🐹 **Go** programming language with GOPATH configuration
 - 📦 **NVM** (Node Version Manager) with latest LTS Node.js
 - ⚡ **pnpm** - Fast, disk space efficient package manager
 - 🐍 **Python 3.12** with pip, pipx, and virtualenv
+- 🖥️ **GUI Applications** - Docker Desktop, VSCode, iTerm2, Chrome, Slack, Postman, and more
 - 🔄 **Update scripts** for easy maintenance (laptop.update, laptop.upgrade)
 
 ## Quick Start
@@ -77,6 +78,12 @@ Run only specific components using Ansible tags:
 # Python installation only
 ./bin/laptop.run --tags python
 
+# GUI applications only
+./bin/laptop.run --tags applications
+
+# Specific apps
+./bin/laptop.run --tags docker,vscode,iterm2
+
 # Multiple tags
 ./bin/laptop.run --tags ssh,git,github
 
@@ -100,6 +107,8 @@ Run only specific components using Ansible tags:
 - `nvm` / `node` / `nodejs` - NVM and Node.js
 - `pnpm` - pnpm package manager
 - `python` / `py` - Python with pip, pipx, and virtualenv
+- `applications` / `apps` / `gui` - GUI applications
+- Individual app tags: `docker`, `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
 
 ## Preview Changes
 
@@ -173,7 +182,8 @@ new-laptop-setup/
 │   ├── golang.yml           # Go installation and configuration
 │   ├── nvm.yml              # NVM and Node.js installation
 │   ├── pnpm.yml             # pnpm package manager
-│   └── python.yml           # Python with pip, pipx, and virtualenv
+│   ├── python.yml           # Python with pip, pipx, and virtualenv
+│   └── applications.yml     # GUI applications (Docker, VSCode, etc.)
 ├── dotfiles/                 # Example dotfiles to symlink
 │   ├── .gitignore_global
 │   ├── .vimrc

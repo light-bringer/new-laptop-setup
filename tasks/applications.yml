@@ -1,0 +1,78 @@
+---
+- name: Install GUI applications via Homebrew Cask
+  block:
+    - name: Install Docker Desktop
+      community.general.homebrew_cask:
+        name: docker
+        state: present
+      tags: [docker]
+
+    - name: Install Visual Studio Code
+      community.general.homebrew_cask:
+        name: visual-studio-code
+        state: present
+      tags: [vscode]
+
+    - name: Install iTerm2 (Better terminal)
+      community.general.homebrew_cask:
+        name: iterm2
+        state: present
+      tags: [iterm2]
+
+    - name: Install Rectangle (Window management)
+      community.general.homebrew_cask:
+        name: rectangle
+        state: present
+      tags: [rectangle]
+
+    - name: Install Postman (API testing)
+      community.general.homebrew_cask:
+        name: postman
+        state: present
+      tags: [postman]
+
+    - name: Install Slack (Team communication)
+      community.general.homebrew_cask:
+        name: slack
+        state: present
+      tags: [slack]
+
+    - name: Install Google Chrome
+      community.general.homebrew_cask:
+        name: google-chrome
+        state: present
+      tags: [chrome]
+
+    - name: Install Firefox
+      community.general.homebrew_cask:
+        name: firefox
+        state: present
+      tags: [firefox]
+
+    - name: Install Notion (Notes and docs)
+      community.general.homebrew_cask:
+        name: notion
+        state: present
+      tags: [notion]
+
+    - name: Install TablePlus (Database client)
+      community.general.homebrew_cask:
+        name: tableplus
+        state: present
+      tags: [tableplus]
+
+    - name: Install Figma (Design tool)
+      community.general.homebrew_cask:
+        name: figma
+        state: present
+      tags: [figma]
+
+    - name: Install Insomnia (API client, alternative to Postman)
+      community.general.homebrew_cask:
+        name: insomnia
+        state: present
+      tags: [insomnia]
+
+    - name: Display installed applications
+      ansible.builtin.debug:
+        msg: "GUI applications installed successfully via Homebrew Cask"

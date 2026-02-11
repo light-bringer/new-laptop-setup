@@ -80,16 +80,18 @@ Symlinked from `dotfiles/` directory:
 - GitLab SSH authentication (via Personal Access Token)
 - Git URL rewriting (HTTPS → SSH for GitHub/GitLab)
 
-#### Development Tools
-- git
-- jq
-- curl, wget
-- tree
-- htop
-- ripgrep
-- fzf
-- tmux
-- vim
+#### CLI Development Tools (50+ tools)
+**Version Control**: git, gh (GitHub CLI), git-lfs
+**Text Processing**: jq, yq, ripgrep, fzf, bat, ack
+**Network Tools**: curl, wget, httpie
+**System Utilities**: tree, htop, ncdu, watch
+**Editors**: vim, neovim, tmux
+**Build Tools**: make, cmake, pkg-config
+**Container/Cloud**: kubectl, helm, terraform, awscli
+**Databases**: postgresql, mysql-client, redis
+**Security**: gnupg, openssl
+**Media**: imagemagick, ffmpeg
+**And more**: telnet, nmap, etc.
 
 #### Programming Languages & Tools
 - Go programming language with GOPATH configured
@@ -97,6 +99,15 @@ Symlinked from `dotfiles/` directory:
 - npm (comes with Node.js)
 - pnpm (fast, disk space efficient package manager)
 - Python 3.12 with pip, pipx, and virtualenv
+
+#### GUI Applications
+**Development**: Docker Desktop, Visual Studio Code, iTerm2
+**Browsers**: Google Chrome, Firefox
+**API Tools**: Postman, Insomnia
+**Database**: TablePlus
+**Communication**: Slack
+**Productivity**: Notion, Rectangle (window manager)
+**Design**: Figma
 
 ### Required User Input
 
@@ -158,6 +169,8 @@ Run only specific components:
 - `nvm` / `node` / `nodejs` - NVM and Node.js
 - `pnpm` - pnpm package manager
 - `python` / `py` - Python with pip, pipx, and virtualenv
+- `applications` / `apps` / `gui` - GUI applications
+- Individual apps: `docker`, `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
 
 ### Dry Run
 
@@ -264,6 +277,18 @@ python3 --version
 pip3 --version
 virtualenv --version
 # Should show installed versions
+```
+
+### 15. Check GUI Applications
+```bash
+# Docker Desktop
+open -a Docker
+
+# VSCode
+code --version
+
+# Check if apps are installed
+ls /Applications | grep -E "(Docker|Visual Studio Code|iTerm|Slack|Postman)"
 ```
 
 ## Troubleshooting

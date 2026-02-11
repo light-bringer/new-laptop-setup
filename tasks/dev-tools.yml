@@ -4,13 +4,55 @@
     name: "{{ item }}"
     state: present
   loop:
+    # Version Control
     - git
-    - jq
+    - gh              # GitHub CLI
+    - git-lfs         # Git Large File Storage
+
+    # Text Processing & Search
+    - jq              # JSON processor
+    - yq              # YAML processor
+    - ripgrep         # Fast grep alternative
+    - fzf             # Fuzzy finder
+    - bat             # Better cat with syntax highlighting
+    - ack             # Search tool
+
+    # Network Tools
     - curl
     - wget
-    - tree
-    - htop
-    - ripgrep
-    - fzf
-    - tmux
+    - httpie          # User-friendly HTTP client
+
+    # System Utilities
+    - tree            # Directory tree viewer
+    - htop            # Process viewer
+    - ncdu            # Disk usage analyzer
+    - watch           # Execute commands periodically
+
+    # Editors & Terminal
     - vim
+    - neovim          # Modern vim
+    - tmux            # Terminal multiplexer
+
+    # Development Tools
+    - make            # Build automation
+    - cmake           # Cross-platform build system
+    - pkg-config      # Package configuration
+
+    # Container & Cloud Tools
+    - kubectl         # Kubernetes CLI
+    - helm            # Kubernetes package manager
+    - terraform       # Infrastructure as code
+    - awscli          # AWS CLI
+
+    # Database CLIs
+    - postgresql@16   # PostgreSQL client
+    - mysql-client    # MySQL client
+    - redis           # Redis CLI
+
+    # Other Utilities
+    - gnupg           # GPG encryption
+    - openssl         # SSL/TLS toolkit
+    - telnet          # Telnet client
+    - nmap            # Network scanner
+    - imagemagick     # Image manipulation
+    - ffmpeg          # Video/audio processing

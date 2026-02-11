@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# -*- mode: bash -*-
+#
+# Pull latest changes from the main branch
+
+set -eo pipefail
+[[ -n $DEBUG ]] && set -x
+
+: "${LAPTOP_SETUP_DIR:="$HOME/dev/new-laptop-setup"}"
+
+main() {
+  cd "${LAPTOP_SETUP_DIR}"
+
+  if [[ -n $(git status --porcelain) ]]; then
+    echo >&2 "Error: You have uncommitted changes in ${LAPTOP_SETUP_DIR}"
+    echo >&2 "Please commit or stash your changes before updating."
+    git status --short
+    exit 1
+  fi
+
+  echo "Updating engineering-laptop-setup from main branch..."
+  git fetch origin
+  git reset --hard origin/main
+  echo "Update complete!"
+}
+
+main "${@}"

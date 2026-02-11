@@ -12,7 +12,7 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 🦊 **GitLab** SSH authentication
 - ⚙️ **Git** user configuration
 - 🛠️ **Development tools** (jq, curl, wget, tree, htop, ripgrep, fzf)
-- 🔄 **Shell aliases** for easy updates (laptop.update, laptop.upgrade)
+- 🔄 **Update scripts** for easy maintenance (laptop.update, laptop.upgrade)
 
 ## Quick Start
 
@@ -26,12 +26,12 @@ cd ~/dev/new-laptop-setup
 This will:
 1. Install Homebrew (if not present)
 2. Install Ansible
-3. Run the full laptop setup automation
-4. Create shell aliases for future updates
+3. Add `bin/` directory to PATH for update scripts
+4. Run the full laptop setup automation
 
 ### Updating Your Setup
 
-After the initial bootstrap, use the convenient shell aliases:
+After the initial bootstrap, use the convenient update scripts:
 
 ```bash
 # Pull latest changes from repository
@@ -125,7 +125,7 @@ You can customize these files in the `dotfiles/` directory, and changes will app
 
 ### Execution Flow
 
-1. **bootstrap.sh** - Entry point that installs Homebrew, sets up aliases, then delegates to `bin/laptop.run`
+1. **bootstrap.sh** - Entry point that installs Homebrew, adds bin/ to PATH, then delegates to `bin/laptop.run`
 2. **bin/laptop.run** - Installs Ansible via Homebrew, configures Python environment, runs `ansible-playbook main.yml`
 3. **main.yml** - Main Ansible playbook that orchestrates all roles and tasks
 

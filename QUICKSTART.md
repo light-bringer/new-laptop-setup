@@ -50,7 +50,7 @@ cd ~/dev/new-laptop-setup
 This will:
 - ✅ Install Homebrew
 - ✅ Install Ansible
-- ✅ Create shell aliases
+- ✅ Add bin/ directory to PATH
 - ✅ Start the automated setup
 
 ### Step 2: Answer Prompts
@@ -86,8 +86,8 @@ ssh -T git@github.com
 # Test GitLab SSH
 ssh -T git@gitlab.com
 
-# Check shell aliases
-alias | grep laptop
+# Check update scripts
+which laptop.update laptop.upgrade
 
 # Check Oh My Zsh
 echo $ZSH
@@ -103,7 +103,7 @@ echo $ZSH
 ### Shell
 - Oh My Zsh with plugins: git, brew, docker, kubectl
 - Zsh configured with Homebrew PATH
-- Aliases: laptop.update, laptop.upgrade
+- Update scripts: laptop.update, laptop.upgrade
 
 ### Dotfiles
 - `.vimrc` - Vim configuration

@@ -14,7 +14,7 @@ cd ~/dev/new-laptop-setup
 That's it! The script will:
 1. Install Homebrew (if needed)
 2. Install Ansible
-3. Set up shell aliases (laptop.update, laptop.upgrade)
+3. Add bin/ directory to PATH (for laptop.update, laptop.upgrade)
 4. Run the full automation
 
 After the initial setup, you can update your configuration anytime:
@@ -64,7 +64,7 @@ The automation installs and configures:
 - Zsh configuration (.zprofile with Homebrew PATH)
 - Oh My Zsh with theme selection
 - Curated plugins: git, brew, docker, kubectl
-- Shell aliases: laptop.update, laptop.upgrade
+- Update scripts: laptop.update, laptop.upgrade (added to PATH)
 
 #### Dotfiles
 Symlinked from `dotfiles/` directory:
@@ -213,10 +213,10 @@ git config --global url."ssh://git@gitlab.com/".insteadOf
 # Should output: https://gitlab.com/
 ```
 
-### 9. Check Shell Aliases
+### 9. Check Update Scripts
 ```bash
-alias | grep laptop
-# Should show laptop.update and laptop.upgrade
+which laptop.update laptop.upgrade
+# Should show paths in ~/dev/new-laptop-setup/bin/
 ```
 
 ### 10. Check Development Tools
@@ -311,9 +311,9 @@ sudo chmod 0755 /opt /private/etc
 
 To remove the setup:
 
-1. **Remove shell aliases** from `~/.zshenv`:
+1. **Remove bin/ from PATH** in `~/.zshenv`:
    ```bash
-   # Edit ~/.zshenv and remove the "Engineering Laptop Setup Aliases" section
+   # Edit ~/.zshenv and remove the "Engineering Laptop Setup PATH" section
    ```
 
 2. **Remove dotfiles symlinks**:

@@ -14,12 +14,12 @@ This repository provides Ansible-based automation for configuring macOS develope
 ```
 Installs Homebrew and Ansible, sets up shell aliases, then runs the full laptop setup automation. This is the entrypoint for new users.
 
-### Shell Aliases (Available After Bootstrap)
+### Update Scripts (Available After Bootstrap)
 ```bash
 laptop.update    # Pull latest changes from main branch
 laptop.upgrade   # Update and run full setup
 ```
-These aliases are added to `~/.zshenv` after the first bootstrap run.
+These scripts are located in `bin/` and added to PATH via `~/.zshenv` after the first bootstrap run.
 
 ### Selective Execution
 ```bash
@@ -48,14 +48,14 @@ ansible-playbook main.yml --syntax-check
 
 ### Execution Flow
 
-1. **bootstrap.sh** → Entry point that installs Homebrew, sets up shell aliases, then delegates to `bin/laptop.run`
+1. **bootstrap.sh** → Entry point that installs Homebrew, adds bin/ to PATH, then delegates to `bin/laptop.run`
 2. **bin/laptop.run** → Installs Ansible via Homebrew, configures Python environment, runs `ansible-playbook main.yml`
 3. **main.yml** → Main Ansible playbook that orchestrates all roles and tasks
 
 ### Directory Structure
 
-- **bootstrap.sh**: Initial setup script with Homebrew installation and alias setup
-- **bin/**: Utility scripts (`laptop.run`, `refresh-ansible-collections.sh`)
+- **bootstrap.sh**: Initial setup script with Homebrew installation and PATH setup
+- **bin/**: Utility scripts (`laptop.run`, `laptop.update`, `laptop.upgrade`, `refresh-ansible-collections.sh`)
 - **main.yml**: Main Ansible playbook defining execution order
 - **tasks/**: Ansible task files for specific components
   - **ssh-key.yml**: SSH key generation (RSA 4096-bit)
@@ -132,16 +132,14 @@ The `tasks/ohmyzsh-setup.yml` task:
 
 **Why RUNZSH=no?** Prevents installer from exec'ing zsh, which would break Ansible execution
 
-## Shell Aliases
+## Update Scripts
 
-The `bootstrap.sh` script adds these aliases to `~/.zshenv`:
+The `bootstrap.sh` script adds the `bin/` directory to PATH in `~/.zshenv`, making these scripts available:
 
-```bash
-alias laptop.update='cd $LAPTOP_SETUP_DIR && git fetch origin && git reset --hard origin/main'
-alias laptop.upgrade='laptop.update && cd $LAPTOP_SETUP_DIR && ./bin/laptop.run'
-```
+- **bin/laptop.update**: Pulls latest changes from main branch (with uncommitted changes check)
+- **bin/laptop.upgrade**: Runs laptop.update, then executes bin/laptop.run
 
-**Pattern**: Similar to Twilio Segment repo but uses aliases instead of scripts for simpler maintenance
+**Pattern**: Follows the Twilio Segment repo pattern of dedicated scripts in bin/ directory
 
 ## Idempotency
 

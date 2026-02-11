@@ -12,7 +12,7 @@ main() {
     ensure_sudo_available
     ensure_directory_permissions
     ensure_homebrew
-    setup_shell_aliases
+    add_bin_to_path
   )
   ./bin/laptop.run "${@}"
 }
@@ -68,30 +68,32 @@ ensure_sudo_available() {
   done 2>/dev/null &
 }
 
-setup_shell_aliases() {
+add_bin_to_path() {
   local setup_dir="${LAPTOP_SETUP_DIR}"
   local zshenv="${HOME}/.zshenv"
 
   # Create .zshenv if it doesn't exist
   touch "${zshenv}"
 
-  # Check if aliases already exist
-  if grep -q "# Engineering Laptop Setup Aliases" "${zshenv}"; then
-    echo "Shell aliases already installed"
+  # Check if PATH is already configured
+  if grep -q "# Engineering Laptop Setup PATH" "${zshenv}"; then
+    echo "PATH already configured"
     return
   fi
 
-  # Add aliases to .zshenv
+  # Add bin directory to PATH
   cat >> "${zshenv}" <<EOF
 
-# Engineering Laptop Setup Aliases
-alias laptop.update='cd ${setup_dir} && git fetch origin && git reset --hard origin/main'
-alias laptop.upgrade='laptop.update && cd ${setup_dir} && ./bin/laptop.run'
+# Engineering Laptop Setup PATH
+export PATH="${setup_dir}/bin:\${PATH}"
 EOF
 
-  echo "Shell aliases installed:"
+  echo "Laptop setup commands installed:"
   echo "  laptop.update  - Pull latest changes from repository"
   echo "  laptop.upgrade - Update and run full setup"
+  echo ""
+  echo "These commands will be available in new shell sessions."
+  echo "For this session, run: export PATH=\"${setup_dir}/bin:\${PATH}\""
 }
 
 main "${@}"

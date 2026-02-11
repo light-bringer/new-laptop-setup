@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# -*- mode: bash -*-
+#
+# Update repository and run full setup
+
+set -eo pipefail
+[[ -n $DEBUG ]] && set -x
+
+: "${LAPTOP_SETUP_DIR:="$HOME/dev/new-laptop-setup"}"
+
+main() {
+  repo_dir="${LAPTOP_SETUP_DIR}"
+
+  # Update repository first
+  echo "Updating repository..."
+  "${repo_dir}/bin/laptop.update"
+
+  # Run the setup
+  echo ""
+  echo "Running setup..."
+  "${repo_dir}/bin/laptop.run" "$@"
+}
+
+main "${@}"

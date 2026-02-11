@@ -29,6 +29,7 @@ main() {
   done 2>/dev/null &
 
   ## make `brew` available and all Homebrew-installed executables first in $PATH for subsequent steps
+  ensure_homebrew
   eval "$(PATH="/opt/homebrew/bin:/usr/local/bin:${PATH}" brew shellenv)"
   ensure_directory_permissions
   ensure_ansible_using_homebrew
@@ -55,6 +56,41 @@ retry() {
     timeout=$((timeout * 2))
   done
   [[ $exit_code == 0 ]] || exit $exit_code
+}
+
+ensure_homebrew() {
+  if ! command -v brew &>/dev/null; then
+    echo 'Homebrew not found. Installing Homebrew...'
+    (
+      ssh_config_fpath=~/.ssh/config
+      if [ ! -f "${ssh_config_fpath}" ]; then
+        mkdir -p "$(dirname "${ssh_config_fpath}")"
+        touch "${ssh_config_fpath}"
+        chmod 600 "${ssh_config_fpath}"
+      fi
+
+      # Add SSH config if not present
+      if ! grep -q "StrictHostKeyChecking accept-new" "${ssh_config_fpath}"; then
+        cat <<'EOT' >> "${ssh_config_fpath}"
+Host *
+  StrictHostKeyChecking accept-new
+EOT
+      fi
+
+      outputdir="$(mktemp -d -t homebrew-installer)"
+      installer="${outputdir}/install.sh"
+      curl \
+        --output "${installer}" \
+        --retry 3 \
+        --fail \
+        --silent \
+        --show-error \
+        --location \
+        'https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh'
+      NONINTERACTIVE=1 "${BASH}" "${installer}"
+    )
+    echo 'Homebrew installed successfully!'
+  fi
 }
 
 ensure_ansible_using_homebrew() {

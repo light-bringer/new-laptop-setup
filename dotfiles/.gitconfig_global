@@ -1,0 +1,148 @@
+# Git Configuration - Global Settings
+# This file contains useful git aliases and configurations
+# Will be merged with your personal .gitconfig (user.name, user.email)
+
+[alias]
+  # Short status
+  s = status -s
+
+  # Verbose status
+  st = status
+
+  # Show branches with details
+  br = branch -v
+  bra = branch -av
+
+  # Checkout shortcuts
+  co = checkout
+  cob = checkout -b
+
+  # Commit shortcuts
+  c = commit
+  cm = commit -m
+  ca = commit --amend
+  can = commit --amend --no-edit
+
+  # Add shortcuts
+  a = add
+  aa = add --all
+  ap = add --patch
+
+  # Diff shortcuts
+  d = diff
+  dc = diff --cached
+  ds = diff --stat
+
+  # Log shortcuts
+  l = log --oneline --decorate --graph
+  la = log --oneline --decorate --graph --all
+  ll = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+  # Show last commit
+  last = log -1 HEAD --stat
+
+  # Show contributors
+  contributors = shortlog --summary --numbered
+
+  # Pull with rebase
+  pr = pull --rebase
+
+  # Push shortcuts
+  p = push
+  pf = push --force-with-lease
+
+  # Stash shortcuts
+  ss = stash save
+  sp = stash pop
+  sl = stash list
+
+  # Show files in commit
+  sf = show --pretty="" --name-only
+
+  # Undo last commit but keep changes
+  undo = reset HEAD~1 --mixed
+
+  # Amend last commit
+  amend = commit --amend --no-edit
+
+  # Rebase shortcuts
+  rb = rebase
+  rbi = rebase -i
+  rbc = rebase --continue
+  rba = rebase --abort
+
+  # Remote shortcuts
+  rv = remote -v
+  ra = remote add
+
+  # Clean up merged branches
+  cleanup = "!git branch --merged | grep -v '\\*\\|master\\|main' | xargs -n 1 git branch -d"
+
+  # Show aliases
+  aliases = config --get-regexp alias
+
+  # Assume unchanged
+  assume = update-index --assume-unchanged
+  unassume = update-index --no-assume-unchanged
+  assumed = "!git ls-files -v | grep ^h | cut -c 3-"
+
+  # Find commits by commit message
+  fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+
+  # Find commits by source code
+  fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+
+  # List branches sorted by last modified
+  recent = "!git for-each-ref --sort=-committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'"
+
+[color]
+  ui = auto
+  branch = auto
+  diff = auto
+  status = auto
+
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+
+[core]
+  editor = vim
+  whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+  pager = less -FMRiX
+  autocrlf = input
+
+[diff]
+  tool = vimdiff
+  colorMoved = default
+
+[merge]
+  tool = vimdiff
+  conflictstyle = diff3
+
+[pull]
+  rebase = false
+
+[push]
+  default = simple
+  followTags = true
+
+[rebase]
+  autoStash = true
+
+[fetch]
+  prune = true
+
+[help]
+  autocorrect = 1

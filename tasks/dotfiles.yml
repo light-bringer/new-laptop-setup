@@ -7,6 +7,9 @@
         state: directory
         mode: '0755'
 
+    # ============================================
+    # Git Configuration
+    # ============================================
     - name: Symlink global gitignore
       ansible.builtin.file:
         src: '{{ playbook_dir }}/dotfiles/.gitignore_global'
@@ -20,6 +23,19 @@
         value: '~/.gitignore_global'
         scope: global
 
+    - name: Include git global configuration
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.gitconfig'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Global Git Config"
+        block: |
+          [include]
+            path = {{ playbook_dir }}/dotfiles/.gitconfig_global
+
+    # ============================================
+    # Editor Configurations
+    # ============================================
     - name: Symlink vim configuration
       ansible.builtin.file:
         src: '{{ playbook_dir }}/dotfiles/.vimrc'
@@ -40,3 +56,60 @@
         dest: '{{ ansible_env.HOME }}/.editorconfig'
         state: link
         force: yes
+
+    # ============================================
+    # Shell Configurations
+    # ============================================
+    - name: Symlink inputrc (readline configuration)
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/.inputrc'
+        dest: '{{ ansible_env.HOME }}/.inputrc'
+        state: link
+        force: yes
+
+    - name: Source aliases in .zshrc
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Aliases and Functions"
+        block: |
+          # Load custom aliases
+          if [ -f {{ playbook_dir }}/dotfiles/.aliases ]; then
+            source {{ playbook_dir }}/dotfiles/.aliases
+          fi
+
+          # Load custom functions
+          if [ -f {{ playbook_dir }}/dotfiles/.functions ]; then
+            source {{ playbook_dir }}/dotfiles/.functions
+          fi
+
+    # ============================================
+    # Tool Configurations
+    # ============================================
+    - name: Symlink curlrc
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/.curlrc'
+        dest: '{{ ansible_env.HOME }}/.curlrc'
+        state: link
+        force: yes
+
+    - name: Symlink wgetrc
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/.wgetrc'
+        dest: '{{ ansible_env.HOME }}/.wgetrc'
+        state: link
+        force: yes
+
+    - name: Symlink terraformrc
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/.terraformrc'
+        dest: '{{ ansible_env.HOME }}/.terraformrc'
+        state: link
+        force: yes
+
+    - name: Create Terraform plugin cache directory
+      ansible.builtin.file:
+        path: '{{ ansible_env.HOME }}/.terraform.d/plugin-cache'
+        state: directory
+        mode: '0755'

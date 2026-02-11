@@ -14,6 +14,8 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 🛠️ **Development tools** (jq, curl, wget, tree, htop, ripgrep, fzf)
 - 🐹 **Go** programming language with GOPATH configuration
 - 📦 **NVM** (Node Version Manager) with latest LTS Node.js
+- ⚡ **pnpm** - Fast, disk space efficient package manager
+- 🐍 **Python 3.12** with pip, pipx, and virtualenv
 - 🔄 **Update scripts** for easy maintenance (laptop.update, laptop.upgrade)
 
 ## Quick Start
@@ -69,6 +71,12 @@ Run only specific components using Ansible tags:
 # NVM and Node.js installation only
 ./bin/laptop.run --tags nvm
 
+# pnpm installation only
+./bin/laptop.run --tags pnpm
+
+# Python installation only
+./bin/laptop.run --tags python
+
 # Multiple tags
 ./bin/laptop.run --tags ssh,git,github
 
@@ -90,6 +98,8 @@ Run only specific components using Ansible tags:
 - `dev-tools` - Development tools
 - `golang` / `go` - Go programming language
 - `nvm` / `node` / `nodejs` - NVM and Node.js
+- `pnpm` - pnpm package manager
+- `python` / `py` - Python with pip, pipx, and virtualenv
 
 ## Preview Changes
 
@@ -161,7 +171,9 @@ new-laptop-setup/
 │   ├── gitlab-setup.yml     # GitLab SSH setup
 │   ├── dev-tools.yml        # Development tools
 │   ├── golang.yml           # Go installation and configuration
-│   └── nvm.yml              # NVM and Node.js installation
+│   ├── nvm.yml              # NVM and Node.js installation
+│   ├── pnpm.yml             # pnpm package manager
+│   └── python.yml           # Python with pip, pipx, and virtualenv
 ├── dotfiles/                 # Example dotfiles to symlink
 │   ├── .gitignore_global
 │   ├── .vimrc

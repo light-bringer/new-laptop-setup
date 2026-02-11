@@ -101,6 +101,8 @@ echo $ZSH
 - ripgrep, fzf, tmux, vim
 - Go programming language
 - NVM with Node.js LTS and npm
+- pnpm package manager
+- Python 3.12 with pip, pipx, and virtualenv
 
 ### Shell
 - Oh My Zsh with plugins: git, brew, docker, kubectl

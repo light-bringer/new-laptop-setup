@@ -51,3 +51,11 @@
     - name: Install and configure NVM
       import_tasks: tasks/nvm.yml
       tags: [nvm, node, nodejs]
+
+    - name: Install pnpm
+      import_tasks: tasks/pnpm.yml
+      tags: [pnpm]
+
+    - name: Install and configure Python
+      import_tasks: tasks/python.yml
+      tags: [python, py]

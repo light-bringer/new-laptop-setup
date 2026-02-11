@@ -68,6 +68,8 @@ ansible-playbook main.yml --syntax-check
   - **dev-tools.yml**: Common development tools via Homebrew
   - **golang.yml**: Go installation and GOPATH configuration
   - **nvm.yml**: NVM installation with latest LTS Node.js
+  - **pnpm.yml**: pnpm package manager installation
+  - **python.yml**: Python with pip, pipx, and virtualenv
 - **dotfiles/**: Example dotfiles to symlink
   - **.gitignore_global**: Global gitignore patterns
   - **.vimrc**: Vim configuration
@@ -92,6 +94,8 @@ Defined in `main.yml`:
 10. **tasks/dev-tools.yml**: Install development tools
 11. **tasks/golang.yml**: Install Go and configure GOPATH
 12. **tasks/nvm.yml**: Install NVM and latest LTS Node.js
+13. **tasks/pnpm.yml**: Install pnpm package manager
+14. **tasks/python.yml**: Install Python with pip, pipx, and virtualenv
 
 ## GitHub/GitLab Integration
 

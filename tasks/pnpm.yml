@@ -1,0 +1,31 @@
+---
+- name: Install pnpm (Fast, disk space efficient package manager)
+  block:
+    - name: Check if pnpm is already installed
+      ansible.builtin.shell: command -v pnpm
+      register: pnpm_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install pnpm via npm
+      ansible.builtin.shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        npm install -g pnpm
+      args:
+        executable: /bin/bash
+      when: pnpm_check.rc != 0
+
+    - name: Verify pnpm installation
+      ansible.builtin.shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        pnpm --version
+      args:
+        executable: /bin/bash
+      register: pnpm_version
+      changed_when: false
+
+    - name: Display pnpm version
+      ansible.builtin.debug:
+        msg: "pnpm installed: {{ pnpm_version.stdout }}"

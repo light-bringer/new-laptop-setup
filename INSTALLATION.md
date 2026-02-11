@@ -95,6 +95,8 @@ Symlinked from `dotfiles/` directory:
 - Go programming language with GOPATH configured
 - NVM (Node Version Manager) with latest LTS Node.js
 - npm (comes with Node.js)
+- pnpm (fast, disk space efficient package manager)
+- Python 3.12 with pip, pipx, and virtualenv
 
 ### Required User Input
 
@@ -154,6 +156,8 @@ Run only specific components:
 - `dev-tools` - Development tools
 - `golang` / `go` - Go programming language
 - `nvm` / `node` / `nodejs` - NVM and Node.js
+- `pnpm` - pnpm package manager
+- `python` / `py` - Python with pip, pipx, and virtualenv
 
 ### Dry Run
 
@@ -245,6 +249,20 @@ echo $GOPATH
 nvm --version
 node --version
 npm --version
+# Should show installed versions
+```
+
+### 13. Check pnpm
+```bash
+pnpm --version
+# Should show installed version
+```
+
+### 14. Check Python
+```bash
+python3 --version
+pip3 --version
+virtualenv --version
 # Should show installed versions
 ```
 

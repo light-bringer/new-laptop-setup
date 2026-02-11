@@ -1,0 +1,46 @@
+---
+- name: Install and configure Python
+  block:
+    - name: Install Python 3 via Homebrew
+      community.general.homebrew:
+        name: python@3.12
+        state: present
+
+    - name: Install pipx for isolated Python tool installation
+      community.general.homebrew:
+        name: pipx
+        state: present
+
+    - name: Ensure pipx path is configured
+      ansible.builtin.shell: pipx ensurepath
+      register: pipx_ensurepath
+      changed_when: "'already in PATH' not in pipx_ensurepath.stderr"
+      failed_when: false
+
+    - name: Install virtualenv via pip
+      ansible.builtin.pip:
+        name: virtualenv
+        executable: pip3
+        state: present
+
+    - name: Verify Python installation
+      ansible.builtin.command: python3 --version
+      register: python_version
+      changed_when: false
+
+    - name: Verify pip installation
+      ansible.builtin.command: pip3 --version
+      register: pip_version
+      changed_when: false
+
+    - name: Verify virtualenv installation
+      ansible.builtin.command: virtualenv --version
+      register: virtualenv_version
+      changed_when: false
+
+    - name: Display Python tools versions
+      ansible.builtin.debug:
+        msg:
+          - "Python: {{ python_version.stdout }}"
+          - "pip: {{ pip_version.stdout }}"
+          - "virtualenv: {{ virtualenv_version.stdout }}"

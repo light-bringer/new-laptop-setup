@@ -1,0 +1,52 @@
+---
+- name: Install Claude Code CLI (optional)
+  block:
+    - name: Check if Claude Code is already installed
+      ansible.builtin.shell: command -v claude
+      register: claude_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install Claude Code globally via npm
+      ansible.builtin.shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        npm install -g @anthropic-ai/claude-code
+      args:
+        executable: /bin/bash
+      when: claude_check.rc != 0
+
+    - name: Verify Claude Code installation
+      ansible.builtin.shell: |
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        claude --version
+      args:
+        executable: /bin/bash
+      register: claude_version
+      changed_when: false
+
+    - name: Create Claude Code config directory
+      ansible.builtin.file:
+        path: '{{ ansible_env.HOME }}/.claude'
+        state: directory
+        mode: '0755'
+
+    - name: Display Claude Code installation message
+      ansible.builtin.debug:
+        msg:
+          - "Claude Code CLI installed successfully!"
+          - "Version: {{ claude_version.stdout }}"
+          - ""
+          - "Getting Started:"
+          - "  1. Run: claude auth"
+          - "  2. Follow the authentication flow"
+          - "  3. Start using: claude"
+          - ""
+          - "Configuration directory: ~/.claude"
+          - "Documentation: https://docs.anthropic.com/claude/docs/claude-code"
+          - ""
+          - "Quick Commands:"
+          - "  claude                    # Start interactive session"
+          - "  claude --help            # Show help"
+          - "  claude --version         # Show version"

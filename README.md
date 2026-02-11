@@ -48,6 +48,15 @@ laptop.update
 laptop.upgrade
 ```
 
+## Optional Components
+
+Some components are not installed by default and must be explicitly requested:
+
+```bash
+# Install Claude Code CLI (not installed by default)
+./bin/laptop.run --tags claude-code
+```
+
 ## Selective Execution
 
 Run only specific components using Ansible tags:
@@ -115,6 +124,9 @@ Run only specific components using Ansible tags:
 - `python` / `py` - Python with pip, pipx, and virtualenv
 - `applications` / `apps` / `gui` - GUI applications
 - Individual app tags: `docker`, `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
+
+**Optional (not installed by default)**:
+- `claude-code` / `claude` - Claude Code CLI (requires explicit `--tags claude-code`)
 
 ## Preview Changes
 
@@ -189,7 +201,8 @@ new-laptop-setup/
 │   ├── nvm.yml              # NVM and Node.js installation
 │   ├── pnpm.yml             # pnpm package manager
 │   ├── python.yml           # Python with pip, pipx, and virtualenv
-│   └── applications.yml     # GUI applications (Docker, VSCode, etc.)
+│   ├── applications.yml     # GUI applications (Docker, VSCode, etc.)
+│   └── claude-code.yml      # Claude Code CLI (optional)
 ├── dotfiles/                 # Example dotfiles to symlink
 │   ├── .gitignore_global
 │   ├── .vimrc

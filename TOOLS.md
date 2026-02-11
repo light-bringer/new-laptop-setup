@@ -195,6 +195,33 @@ goto octocat/Hello-World
 - **GitHub** - SSH authentication via API
 - **GitLab** - SSH authentication via API
 
+## 🤖 AI Tools (Optional)
+
+### Claude Code CLI
+**NOT installed by default** - Must be explicitly requested
+
+Anthropic's official CLI for Claude AI coding assistant.
+
+**Installation**:
+```bash
+./bin/laptop.run --tags claude-code
+```
+
+**Features**:
+- Interactive AI coding sessions
+- Code generation and editing
+- Terminal-based interface
+- Requires Anthropic API key
+
+**Setup**:
+```bash
+# After installation
+claude auth  # Authenticate with Anthropic
+claude       # Start interactive session
+```
+
+**Configuration**: `~/.claude`
+
 ## 📦 Package Managers
 
 - **Homebrew** - macOS package manager

@@ -109,6 +109,12 @@ Symlinked from `dotfiles/` directory:
 **Productivity**: Notion, Rectangle (window manager)
 **Design**: Figma
 
+#### Optional Tools (Not Installed by Default)
+- **Claude Code CLI** - Anthropic's AI coding assistant
+  - Install with: `./bin/laptop.run --tags claude-code`
+  - Requires: Node.js (installed via NVM)
+  - Setup: Run `claude auth` after installation
+
 ### Required User Input
 
 During the setup, you'll be prompted for:
@@ -173,6 +179,9 @@ Run only specific components:
 - `python` / `py` - Python with pip, pipx, and virtualenv
 - `applications` / `apps` / `gui` - GUI applications
 - Individual apps: `docker`, `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
+
+**Optional (not installed by default)**:
+- `claude-code` / `claude` - Claude Code CLI
 
 ### Dry Run
 

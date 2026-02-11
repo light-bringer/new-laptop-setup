@@ -71,3 +71,7 @@
     - name: Install GUI applications
       import_tasks: tasks/applications.yml
       tags: [applications, apps, gui]
+
+    - name: Install Claude Code CLI (optional - not installed by default)
+      import_tasks: tasks/claude-code.yml
+      tags: [never, claude-code, claude]

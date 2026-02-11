@@ -6,6 +6,7 @@ Ansible-based automation for configuring macOS developer environments. This tool
 
 - 🍺 **Homebrew** installation and configuration
 - 🐚 **Oh My Zsh** with curated plugins
+- ⭐ **Starship** - Fast, customizable cross-shell prompt (default theme)
 - 📝 **Dotfiles** management (.vimrc, .tmux.conf, .gitignore_global, .editorconfig)
 - 🔑 **SSH key** generation and management
 - 🐙 **GitHub** SSH authentication
@@ -58,6 +59,9 @@ Run only specific components using Ansible tags:
 # Oh My Zsh setup only
 ./bin/laptop.run --tags ohmyzsh
 
+# Starship prompt only
+./bin/laptop.run --tags starship
+
 # GitHub configuration only
 ./bin/laptop.run --tags github
 
@@ -99,6 +103,7 @@ Run only specific components using Ansible tags:
 - `ssh` - SSH key generation
 - `zsh` - Zsh configuration
 - `ohmyzsh` - Oh My Zsh installation
+- `starship` / `prompt` - Starship prompt
 - `dotfiles` - Dotfiles symlinking
 - `git` - Git user configuration
 - `github` - GitHub SSH setup

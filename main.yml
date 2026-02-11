@@ -24,6 +24,10 @@
       import_tasks: tasks/ohmyzsh-setup.yml
       tags: [ohmyzsh]
 
+    - name: Install and configure Starship prompt
+      import_tasks: tasks/starship.yml
+      tags: [starship, prompt]
+
     - name: Symlink dotfiles
       import_tasks: tasks/dotfiles.yml
       tags: [dotfiles]

@@ -60,7 +60,8 @@ ansible-playbook main.yml --syntax-check
 - **tasks/**: Ansible task files for specific components
   - **ssh-key.yml**: SSH key generation (RSA 4096-bit)
   - **zsh-config.yml**: Zsh + brew shellenv configuration
-  - **ohmyzsh-setup.yml**: Oh My Zsh installation and theme selection
+  - **ohmyzsh-setup.yml**: Oh My Zsh installation
+  - **starship.yml**: Starship prompt installation and configuration
   - **dotfiles.yml**: Symlink dotfiles from repo to home directory
   - **git-config.yml**: Git user.name and user.email
   - **github-setup.yml**: GitHub SSH authentication via API
@@ -87,8 +88,9 @@ Defined in `main.yml`:
 2. **geerlingguy.mac.homebrew**: Installs and configures Homebrew
 3. **tasks/ssh-key.yml**: Generate SSH keys if none exist
 4. **tasks/zsh-config.yml**: Configure .zprofile with brew shellenv
-5. **tasks/ohmyzsh-setup.yml**: Install Oh My Zsh with theme selection
-6. **tasks/dotfiles.yml**: Symlink dotfiles to home directory
+5. **tasks/ohmyzsh-setup.yml**: Install Oh My Zsh
+6. **tasks/starship.yml**: Install and configure Starship prompt
+7. **tasks/dotfiles.yml**: Symlink dotfiles to home directory
 7. **tasks/git-config.yml**: Configure git user.name and user.email
 8. **tasks/github-setup.yml**: GitHub SSH authentication and key upload
 9. **tasks/gitlab-setup.yml**: GitLab SSH authentication and key upload

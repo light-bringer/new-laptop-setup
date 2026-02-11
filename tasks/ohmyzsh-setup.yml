@@ -11,42 +11,11 @@
         RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
       when: not ohmyzsh_stat.stat.exists
 
-    - name: Check for existing Oh My Zsh theme configuration
-      ansible.builtin.shell: grep '^ZSH_THEME=' {{ ansible_env.HOME }}/.zshrc || echo 'ZSH_THEME="robbyrussell"'
-      register: current_theme
-      changed_when: false
-      failed_when: false
-
-    - name: Prompt for Oh My Zsh theme selection
-      ansible.builtin.pause:
-        prompt: |
-          Choose an Oh My Zsh theme (press Enter for default):
-          1. robbyrussell (default - simple, clean)
-          2. agnoster (powerline-style, needs patched fonts)
-          3. powerlevel10k (feature-rich, needs patched fonts)
-          4. pure (minimal, elegant)
-          Enter your choice (1-4) or press Enter for default
-      register: theme_choice
-      when: not ohmyzsh_stat.stat.exists
-
-    - name: Set theme based on user choice
-      ansible.builtin.set_fact:
-        selected_theme: "{{ theme_map[theme_choice.user_input | default('1')] | default('robbyrussell') }}"
-      vars:
-        theme_map:
-          '1': 'robbyrussell'
-          '2': 'agnoster'
-          '3': 'powerlevel10k/powerlevel10k'
-          '4': 'refined'
-          '': 'robbyrussell'
-      when: not ohmyzsh_stat.stat.exists
-
-    - name: Configure Oh My Zsh theme
+    - name: Disable Oh My Zsh theme (using Starship instead)
       ansible.builtin.lineinfile:
         path: '{{ ansible_env.HOME }}/.zshrc'
         regexp: '^ZSH_THEME='
-        line: 'ZSH_THEME="{{ selected_theme | default("robbyrussell") }}"'
-      when: not ohmyzsh_stat.stat.exists
+        line: 'ZSH_THEME=""  # Disabled - using Starship prompt'
 
     - name: Configure Oh My Zsh plugins
       ansible.builtin.lineinfile:

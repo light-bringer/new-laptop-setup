@@ -62,8 +62,8 @@ The automation installs and configures:
 
 #### Shell Environment
 - Zsh configuration (.zprofile with Homebrew PATH)
-- Oh My Zsh with theme selection
-- Curated plugins: git, brew, docker, kubectl
+- Oh My Zsh with curated plugins (git, brew, docker, kubectl)
+- Starship prompt (fast, customizable, cross-shell)
 - Update scripts: laptop.update, laptop.upgrade (added to PATH)
 
 #### Dotfiles
@@ -160,6 +160,7 @@ Run only specific components:
 - `ssh` - SSH key generation
 - `zsh` - Zsh configuration
 - `ohmyzsh` - Oh My Zsh installation
+- `starship` / `prompt` - Starship prompt
 - `dotfiles` - Dotfiles symlinking
 - `git` - Git user configuration
 - `goto` - goto shell function

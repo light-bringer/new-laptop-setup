@@ -116,11 +116,13 @@ This document lists all tools and applications installed by this setup.
 - **Zsh** - Modern shell (macOS default)
 - **Oh My Zsh** - Zsh framework with plugins and themes
 
-### Oh My Zsh Themes
-- **robbyrussell** - Simple and clean (default)
-- **agnoster** - Powerline-style with git info
-- **powerlevel10k** - Feature-rich with customization
-- **refined** - Minimal and elegant
+### Starship Prompt
+- **Starship** - Fast, customizable cross-shell prompt (default)
+  - Written in Rust for maximum performance
+  - Shows git status, language versions, command duration
+  - Minimal, customizable with TOML configuration
+  - Configuration: `~/.config/starship.toml`
+  - Website: https://starship.rs
 
 ### Oh My Zsh Plugins
 - **git** - Git aliases and functions
@@ -219,6 +221,7 @@ Located in `bin/` directory:
 - `ssh` - SSH key generation
 - `zsh` - Zsh configuration
 - `ohmyzsh` - Oh My Zsh installation
+- `starship` / `prompt` - Starship prompt
 - `dotfiles` - Dotfiles symlinking
 - `git` - Git configuration
 - `goto` - goto shell function

@@ -16,10 +16,24 @@ main() {
     exit 1
   fi
 
+  # Prompt for password once and store it for both sudo and Ansible
   if ! sudo -n true &>/dev/null; then
     echo >&2 'Prompting for sudo permissions...'
     echo >&2 'This password will be used for both system setup and Ansible tasks.'
-    sudo -v
+
+    # Read password securely
+    read -s -p "Password: " SUDO_PASSWORD
+    echo
+
+    # Validate password works
+    echo "$SUDO_PASSWORD" | sudo -S -v
+    if [ $? -ne 0 ]; then
+      echo >&2 "Error: Invalid password"
+      exit 1
+    fi
+
+    # Export for Ansible to use
+    export ANSIBLE_BECOME_PASSWORD="$SUDO_PASSWORD"
   fi
 
   ## sudo refresh trick via https://github.com/geerlingguy/dotfiles/blob/8489a049/.osx#L32
@@ -29,8 +43,7 @@ main() {
     kill -0 "$$" || exit
   done 2>/dev/null &
 
-  # Configure Ansible to use non-interactive sudo (uses cached credentials)
-  export ANSIBLE_BECOME_FLAGS="-n"
+  # Ansible will use ANSIBLE_BECOME_PASSWORD from above
 
   ## make `brew` available and all Homebrew-installed executables first in $PATH for subsequent steps
   ensure_homebrew
@@ -46,11 +59,8 @@ main() {
 
   ensure_ansible_dependencies
 
-  # Refresh sudo timestamp right before Ansible
-  sudo -v
-
   echo ""
-  echo "Ansible will now configure your laptop using your sudo session..."
+  echo "Ansible will now configure your laptop..."
   echo ""
 
   ansible-playbook main.yml "$@"

@@ -34,9 +34,10 @@ main() {
   ensure_directory_permissions
   ensure_ansible_using_homebrew
   ensure_jq_using_homebrew
+  ensure_python_using_homebrew
   PATH="$(locate_ansible_python_bin):${PATH}"
-  # Use Python 3.13 for better compatibility (Python 3.14 has compatibility issues)
-  ANSIBLE_PYTHON_INTERPRETER="/opt/homebrew/opt/python@3.13/bin/python3.13"
+  # Use Homebrew Python 3.12 for better compatibility (3.14 has issues)
+  ANSIBLE_PYTHON_INTERPRETER="/opt/homebrew/opt/python@3.12/bin/python3.12"
   export PATH ANSIBLE_PYTHON_INTERPRETER
 
   ensure_ansible_dependencies
@@ -115,6 +116,15 @@ ensure_jq_using_homebrew() {
     echo 'Installing jq using Homebrew...'
     brew install jq
     brew link --overwrite jq
+  fi
+}
+
+ensure_python_using_homebrew() {
+  # Install Python 3.12 for better Ansible compatibility (3.14 has issues)
+  if ! brew list python@3.12 &>/dev/null; then
+    echo 'Installing Python 3.12 via Homebrew for Ansible...'
+    brew install python@3.12
+    brew link --overwrite python@3.12
   fi
 }
 

@@ -18,6 +18,7 @@ main() {
 
   if ! sudo -n true &>/dev/null; then
     echo >&2 'Prompting for sudo permissions...'
+    echo >&2 'This password will be used for both system setup and Ansible tasks.'
     sudo -v
   fi
 
@@ -27,6 +28,9 @@ main() {
     sleep 60
     kill -0 "$$" || exit
   done 2>/dev/null &
+
+  # Configure Ansible to use non-interactive sudo (uses cached credentials)
+  export ANSIBLE_BECOME_FLAGS="-n"
 
   ## make `brew` available and all Homebrew-installed executables first in $PATH for subsequent steps
   ensure_homebrew
@@ -42,11 +46,11 @@ main() {
 
   ensure_ansible_dependencies
 
-  # Refresh sudo timestamp right before Ansible (uses existing sudo session)
+  # Refresh sudo timestamp right before Ansible
   sudo -v
 
   echo ""
-  echo "Ansible will now configure your laptop..."
+  echo "Ansible will now configure your laptop using your sudo session..."
   echo ""
 
   ansible-playbook main.yml "$@"

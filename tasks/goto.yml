@@ -1,9 +1,14 @@
 ---
 - name: Install goto shell function
   block:
-    - name: Prompt for default GitHub username
+    - name: Prompt for Git platform choice
       ansible.builtin.pause:
-        prompt: 'Enter your default GitHub username for goto function (e.g., light-bringer)'
+        prompt: 'Choose default Git platform for goto function (gitlab/github) [gitlab]'
+      register: goto_platform_prompt
+
+    - name: Prompt for default organization/username
+      ansible.builtin.pause:
+        prompt: 'Enter your default organization/username for goto function [vercara]'
       register: goto_user_prompt
 
     - name: Prompt for goto root directory
@@ -13,12 +18,17 @@
 
     - name: Set goto default values
       ansible.builtin.set_fact:
-        goto_default_user: "{{ goto_user_prompt.user_input }}"
+        goto_platform: "{{ goto_platform_prompt.user_input | default('gitlab', true) | lower }}"
+        goto_default_user: "{{ goto_user_prompt.user_input | default('vercara', true) }}"
         goto_root: "{{ goto_root_prompt.user_input | default('~/dev/src', true) }}"
+
+    - name: Set platform-specific values
+      ansible.builtin.set_fact:
+        goto_domain: "{{ 'gitlab.com' if goto_platform == 'gitlab' else 'github.com' }}"
 
     - name: Create goto root directory
       ansible.builtin.file:
-        path: "{{ goto_root | regex_replace('^~', ansible_env.HOME) }}/github.com"
+        path: "{{ goto_root | regex_replace('^~', ansible_env.HOME) }}/{{ goto_domain }}"
         state: directory
         mode: '0755'
 
@@ -29,9 +39,11 @@
         mode: '0644'
         marker: "# {mark} ANSIBLE MANAGED BLOCK - goto function"
         block: |
-          # goto - Quick navigation to GitHub repositories
+          # goto - Quick navigation to Git repositories
           export GOTO_ROOT="{{ goto_root }}"
           export GOTO_DEFAULT_USER="{{ goto_default_user }}"
+          export GOTO_PLATFORM="{{ goto_platform }}"
+          export GOTO_DOMAIN="{{ goto_domain }}"
 
           goto() {
             local input=$1
@@ -42,6 +54,8 @@
 
             if [[ -z "$input" ]]; then
               echo "Usage: goto <project> OR goto <user>/<project>"
+              echo "Current platform: $GOTO_PLATFORM ($GOTO_DOMAIN)"
+              echo "Default user/org: $GOTO_DEFAULT_USER"
               return 1
             fi
 
@@ -53,7 +67,7 @@
               repo=$input
             fi
 
-            target_dir="$GOTO_ROOT/github.com/$user/$repo"
+            target_dir="$GOTO_ROOT/$GOTO_DOMAIN/$user/$repo"
 
             if [[ -d "$target_dir" ]]; then
               echo "🚀 Jumping to existing directory: $target_dir"
@@ -64,7 +78,7 @@
             echo "📂 Directory not found. Preparing to clone..."
             mkdir -p "$(dirname "$target_dir")"
 
-            git_url="git@github.com:$user/$repo.git"
+            git_url="git@$GOTO_DOMAIN:$user/$repo.git"
             echo "⬇️  Cloning $git_url..."
 
             if git clone "$git_url" "$target_dir"; then
@@ -81,11 +95,14 @@
       ansible.builtin.debug:
         msg:
           - "goto function installed successfully!"
-          - "Default user: {{ goto_default_user }}"
+          - "Platform: {{ goto_platform }} ({{ goto_domain }})"
+          - "Default organization/user: {{ goto_default_user }}"
           - "Root directory: {{ goto_root }}"
           - ""
           - "Usage examples:"
-          - "  goto my-repo           # Clones/navigates to {{ goto_default_user }}/my-repo"
-          - "  goto octocat/Hello-World  # Clones/navigates to octocat/Hello-World"
+          - "  goto my-repo              # Clones/navigates to {{ goto_default_user }}/my-repo"
+          - "  goto other-org/project    # Clones/navigates to other-org/project"
+          - ""
+          - "Directory structure: {{ goto_root }}/{{ goto_domain }}/<user>/<repo>"
           - ""
           - "Restart your shell or run: source ~/.zshrc"

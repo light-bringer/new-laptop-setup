@@ -1,0 +1,39 @@
+---
+- name: Install GitHub Copilot CLI (optional)
+  block:
+    - name: Check if GitHub Copilot extension is already installed
+      ansible.builtin.shell: gh extension list | grep -q gh-copilot
+      register: copilot_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install GitHub Copilot CLI extension
+      ansible.builtin.shell: gh extension install github/gh-copilot
+      when: copilot_check.rc != 0
+
+    - name: Verify GitHub Copilot CLI installation
+      ansible.builtin.shell: gh copilot --version
+      register: copilot_version
+      changed_when: false
+      failed_when: false
+
+    - name: Display GitHub Copilot CLI installation message
+      ansible.builtin.debug:
+        msg:
+          - "GitHub Copilot CLI installed successfully!"
+          - "Version: {{ copilot_version.stdout if copilot_version.rc == 0 else 'installed' }}"
+          - ""
+          - "Getting Started:"
+          - "  1. Ensure you're authenticated: gh auth status"
+          - "  2. If not authenticated, run: gh auth login"
+          - "  3. Ensure you have GitHub Copilot access in your account"
+          - ""
+          - "Usage:"
+          - "  gh copilot explain        # Explain a command"
+          - "  gh copilot suggest        # Suggest a command"
+          - ""
+          - "Shell Aliases (add to ~/.zshrc for convenience):"
+          - "  alias ghce='gh copilot explain'"
+          - "  alias ghcs='gh copilot suggest'"
+          - ""
+          - "Documentation: https://docs.github.com/en/copilot/github-copilot-in-the-cli"

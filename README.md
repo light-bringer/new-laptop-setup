@@ -12,13 +12,14 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 🐙 **GitHub** SSH authentication
 - 🦊 **GitLab** SSH authentication
 - ⚙️ **Git** user configuration
-- 🚀 **goto** - Custom shell function for quick GitHub repository navigation
+- 🚀 **goto** - Custom shell function for quick Git repository navigation (GitLab default, GitHub optional)
 - 🛠️ **CLI Development tools** (50+ tools including git, jq, curl, kubectl, terraform, awscli)
 - 🐹 **Go** programming language with GOPATH configuration
 - 📦 **NVM** (Node Version Manager) with latest LTS Node.js
 - ⚡ **pnpm** - Fast, disk space efficient package manager
 - 🐍 **Python 3.12** with pip, pipx, and virtualenv
 - 🖥️ **GUI Applications** - Docker Desktop (default), VSCode, iTerm2, Chrome, Slack, Postman (optional)
+- 🤖 **AI CLI Tools** - Claude Code CLI, GitHub Copilot CLI (optional)
 - 🔄 **Update scripts** for easy maintenance (laptop.update, laptop.upgrade)
 
 ## Quick Start
@@ -55,6 +56,9 @@ Some components are not installed by default and must be explicitly requested:
 ```bash
 # Install Claude Code CLI
 ./bin/laptop.run --tags claude-code
+
+# Install GitHub Copilot CLI
+./bin/laptop.run --tags github-copilot
 
 # Install optional GUI applications (VSCode, Chrome, Slack, etc.)
 ./bin/laptop.run --tags gui-optional
@@ -124,6 +128,7 @@ Run only specific components using Ansible tags:
 - `starship` / `prompt` - Starship prompt
 - `dotfiles` - Dotfiles symlinking
 - `git` - Git user configuration
+- `goto` - goto shell function for repository navigation
 - `github` - GitHub SSH setup
 - `gitlab` - GitLab SSH setup
 - `dev-tools` - Development tools
@@ -136,6 +141,7 @@ Run only specific components using Ansible tags:
 
 **Optional (not installed by default)**:
 - `claude-code` / `claude` - Claude Code CLI
+- `github-copilot` / `copilot` - GitHub Copilot CLI
 - `gui-optional` - All optional GUI apps (VSCode, Chrome, Slack, etc.)
 - Individual apps: `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
 
@@ -170,6 +176,39 @@ Similar to GitHub, you'll need a GitLab Personal Access Token:
 2. Required scopes: `api`, `read_user`, `write_repository`
 3. Enter the token when prompted
 4. Your SSH key will be automatically uploaded
+
+## goto - Repository Navigation
+
+The `goto` shell function provides quick navigation and cloning for Git repositories:
+
+**Configuration during setup:**
+- **Platform**: Choose GitLab (default) or GitHub
+- **Default Org/User**: Set to `vercara` by default (customizable during setup)
+- **Root Directory**: `~/dev/src` (customizable during setup)
+
+**Usage:**
+
+```bash
+# Navigate to or clone a repository under the default org
+goto my-repo              # → ~/dev/src/gitlab.com/vercara/my-repo
+
+# Navigate to or clone from a specific org/user
+goto other-org/project    # → ~/dev/src/gitlab.com/other-org/project
+
+# Show current configuration
+goto
+```
+
+**How it works:**
+- If the directory exists locally, it navigates to it
+- If not found, it automatically clones the repository using SSH
+- Directory structure: `$GOTO_ROOT/$PLATFORM/$ORG/$REPO`
+
+**Example workflow:**
+```bash
+goto backend-api          # Clones vercara/backend-api if needed, then cd's into it
+goto teamname/frontend    # Clones teamname/frontend if needed, then cd's into it
+```
 
 ## Dotfiles
 
@@ -208,6 +247,7 @@ new-laptop-setup/
 │   ├── ohmyzsh-setup.yml    # Oh My Zsh installation
 │   ├── dotfiles.yml         # Dotfiles symlinking
 │   ├── git-config.yml       # Git user configuration
+│   ├── goto.yml             # goto shell function (GitLab default, vercara org)
 │   ├── github-setup.yml     # GitHub SSH setup
 │   ├── gitlab-setup.yml     # GitLab SSH setup
 │   ├── dev-tools.yml        # Development tools
@@ -216,7 +256,8 @@ new-laptop-setup/
 │   ├── pnpm.yml             # pnpm package manager
 │   ├── python.yml           # Python with pip, pipx, and virtualenv
 │   ├── applications.yml     # GUI applications (Docker, VSCode, etc.)
-│   └── claude-code.yml      # Claude Code CLI (optional)
+│   ├── claude-code.yml      # Claude Code CLI (optional)
+│   └── github-copilot.yml   # GitHub Copilot CLI (optional)
 ├── dotfiles/                 # Example dotfiles to symlink
 │   ├── .gitignore_global
 │   ├── .vimrc

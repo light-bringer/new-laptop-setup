@@ -75,3 +75,7 @@
     - name: Install Claude Code CLI (optional - not installed by default)
       import_tasks: tasks/claude-code.yml
       tags: [never, claude-code, claude]
+
+    - name: Install GitHub Copilot CLI (optional - not installed by default)
+      import_tasks: tasks/github-copilot.yml
+      tags: [never, github-copilot, copilot]

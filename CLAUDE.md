@@ -28,6 +28,10 @@ These scripts are located in `bin/` and added to PATH via `~/.zshenv` after the 
 ./bin/laptop.run --tags ohmyzsh,dotfiles
 ./bin/laptop.run --skip-tags github
 
+# Install optional components (not installed by default)
+./bin/laptop.run --tags claude-code      # Install Claude Code CLI
+./bin/laptop.run --tags github-copilot   # Install GitHub Copilot CLI
+
 # Preview changes without applying
 ./bin/laptop.run --check
 ```
@@ -64,6 +68,7 @@ ansible-playbook main.yml --syntax-check
   - **starship.yml**: Starship prompt installation and configuration
   - **dotfiles.yml**: Symlink dotfiles from repo to home directory
   - **git-config.yml**: Git user.name and user.email
+  - **goto.yml**: Install goto shell function for quick repository navigation (GitLab default)
   - **github-setup.yml**: GitHub SSH authentication via API
   - **gitlab-setup.yml**: GitLab SSH authentication via API
   - **dev-tools.yml**: Common development tools via Homebrew
@@ -72,6 +77,8 @@ ansible-playbook main.yml --syntax-check
   - **pnpm.yml**: pnpm package manager installation
   - **python.yml**: Python with pip, pipx, and virtualenv
   - **applications.yml**: GUI applications via Homebrew Cask (Docker, VSCode, etc.)
+  - **claude-code.yml**: Claude Code CLI installation (optional)
+  - **github-copilot.yml**: GitHub Copilot CLI installation via gh extension (optional)
 - **dotfiles/**: Example dotfiles to symlink
   - **.gitignore_global**: Global gitignore patterns
   - **.vimrc**: Vim configuration
@@ -91,15 +98,20 @@ Defined in `main.yml`:
 5. **tasks/ohmyzsh-setup.yml**: Install Oh My Zsh
 6. **tasks/starship.yml**: Install and configure Starship prompt
 7. **tasks/dotfiles.yml**: Symlink dotfiles to home directory
-7. **tasks/git-config.yml**: Configure git user.name and user.email
-8. **tasks/github-setup.yml**: GitHub SSH authentication and key upload
-9. **tasks/gitlab-setup.yml**: GitLab SSH authentication and key upload
-10. **tasks/dev-tools.yml**: Install development tools
-11. **tasks/golang.yml**: Install Go and configure GOPATH
-12. **tasks/nvm.yml**: Install NVM and latest LTS Node.js
-13. **tasks/pnpm.yml**: Install pnpm package manager
-14. **tasks/python.yml**: Install Python with pip, pipx, and virtualenv
-15. **tasks/applications.yml**: Install GUI applications via Homebrew Cask
+8. **tasks/git-config.yml**: Configure git user.name and user.email
+9. **tasks/goto.yml**: Install goto shell function (GitLab default, defaults to vercara org)
+10. **tasks/github-setup.yml**: GitHub SSH authentication and key upload
+11. **tasks/gitlab-setup.yml**: GitLab SSH authentication and key upload
+12. **tasks/dev-tools.yml**: Install development tools
+13. **tasks/golang.yml**: Install Go and configure GOPATH
+14. **tasks/nvm.yml**: Install NVM and latest LTS Node.js
+15. **tasks/pnpm.yml**: Install pnpm package manager
+16. **tasks/python.yml**: Install Python with pip, pipx, and virtualenv
+17. **tasks/applications.yml**: Install GUI applications via Homebrew Cask
+
+**Optional Components** (not installed by default, use `--tags` to enable):
+- **tasks/claude-code.yml**: Install Claude Code CLI via npm
+- **tasks/github-copilot.yml**: Install GitHub Copilot CLI via gh extension
 
 ## GitHub/GitLab Integration
 
@@ -143,6 +155,39 @@ The `tasks/ohmyzsh-setup.yml` task:
 4. Ensures `.zshrc` sources `.zprofile` for Homebrew PATH
 
 **Why RUNZSH=no?** Prevents installer from exec'ing zsh, which would break Ansible execution
+
+## goto Shell Function
+
+The `tasks/goto.yml` task installs a custom shell function for quick repository navigation and cloning:
+
+**Configuration Prompts:**
+1. **Platform choice**: GitLab (default) or GitHub
+2. **Default organization/user**: Defaults to `vercara` (customizable)
+3. **Root directory**: Defaults to `~/dev/src` (customizable)
+
+**Functionality:**
+- Navigates to existing local repositories
+- Automatically clones repositories via SSH if not found locally
+- Directory structure: `$GOTO_ROOT/$PLATFORM/$ORG/$REPO`
+
+**Environment Variables:**
+- `GOTO_ROOT` - Base directory for repositories (default: `~/dev/src`)
+- `GOTO_DEFAULT_USER` - Default organization/user (default: `vercara`)
+- `GOTO_PLATFORM` - Platform choice: `gitlab` or `github` (default: `gitlab`)
+- `GOTO_DOMAIN` - Resolved domain: `gitlab.com` or `github.com`
+
+**Usage Examples:**
+```bash
+goto my-repo              # → ~/dev/src/gitlab.com/vercara/my-repo
+goto other-org/project    # → ~/dev/src/gitlab.com/other-org/project
+goto                      # Shows current configuration
+```
+
+**Implementation Details:**
+- Function added to `.zshrc` via `blockinfile` (Ansible-managed)
+- Uses SSH for cloning: `git@$GOTO_DOMAIN:$user/$repo.git`
+- Creates directory structure automatically
+- Idempotent: Re-running won't overwrite function
 
 ## Update Scripts
 
@@ -204,6 +249,51 @@ Edit `tasks/ohmyzsh-setup.yml` and update the plugins list:
     path: '{{ ansible_env.HOME }}/.zshrc'
     regexp: '^plugins='
     line: 'plugins=(git brew docker kubectl new-plugin)'
+```
+
+## Optional AI CLI Tools
+
+### GitHub Copilot CLI
+
+GitHub Copilot CLI provides AI-powered command-line assistance. It's installed as a GitHub CLI extension.
+
+**Installation:**
+```bash
+./bin/laptop.run --tags github-copilot
+```
+
+**Requirements:**
+- GitHub CLI (`gh`) is already installed via `dev-tools.yml`
+- Requires GitHub authentication: `gh auth login`
+- Requires active GitHub Copilot subscription
+
+**Usage:**
+- `gh copilot explain` - Explain shell commands
+- `gh copilot suggest` - Suggest commands to accomplish a task
+
+**Suggested Shell Aliases:**
+```bash
+alias ghce='gh copilot explain'
+alias ghcs='gh copilot suggest'
+```
+
+### Claude Code CLI
+
+Claude Code CLI provides access to Claude AI in the terminal.
+
+**Installation:**
+```bash
+./bin/laptop.run --tags claude-code
+```
+
+**Requirements:**
+- Installed via npm (requires NVM from `nvm.yml`)
+- Requires Anthropic API key for authentication
+
+**First Run:**
+```bash
+claude auth  # Authenticate with Anthropic
+claude       # Start interactive session
 ```
 
 ## Important Notes

@@ -42,6 +42,13 @@ main() {
 
   ensure_ansible_dependencies
 
+  # Refresh sudo timestamp right before Ansible (uses existing sudo session)
+  sudo -v
+
+  echo ""
+  echo "Ansible will now configure your laptop..."
+  echo ""
+
   ansible-playbook main.yml "$@"
 }
 

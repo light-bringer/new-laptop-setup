@@ -1,6 +1,40 @@
 ---
 - name: Manage dotfiles
   block:
+    - name: Set backup timestamp
+      ansible.builtin.set_fact:
+        backup_timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
+
+    - name: Create dotfiles backup directory
+      ansible.builtin.file:
+        path: '{{ ansible_env.HOME }}/.dotfiles-backup-{{ backup_timestamp }}'
+        state: directory
+        mode: '0755'
+
+    - name: Backup existing dotfiles
+      ansible.builtin.copy:
+        src: '{{ ansible_env.HOME }}/{{ item }}'
+        dest: '{{ ansible_env.HOME }}/.dotfiles-backup-{{ backup_timestamp }}/{{ item }}'
+        remote_src: yes
+      loop:
+        - .gitignore_global
+        - .vimrc
+        - .tmux.conf
+        - .editorconfig
+        - .inputrc
+        - .curlrc
+        - .wgetrc
+        - .terraformrc
+        - .zshrc
+        - .gitconfig
+      ignore_errors: yes
+      register: backup_result
+
+    - name: Display backup location
+      ansible.builtin.debug:
+        msg: "Existing dotfiles backed up to: ~/.dotfiles-backup-{{ backup_timestamp }}"
+      when: backup_result is changed
+
     - name: Create .config directory
       ansible.builtin.file:
         path: '{{ ansible_env.HOME }}/.config'
@@ -15,7 +49,6 @@
         src: '{{ playbook_dir }}/dotfiles/.gitignore_global'
         dest: '{{ ansible_env.HOME }}/.gitignore_global'
         state: link
-        force: yes
 
     - name: Configure git to use global gitignore
       community.general.git_config:
@@ -36,26 +69,33 @@
     # ============================================
     # Editor Configurations
     # ============================================
-    - name: Symlink vim configuration
-      ansible.builtin.file:
-        src: '{{ playbook_dir }}/dotfiles/.vimrc'
-        dest: '{{ ansible_env.HOME }}/.vimrc'
-        state: link
-        force: yes
+    - name: Source vim configuration from repo
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.vimrc'
+        create: yes
+        mode: '0644'
+        marker: '" {mark} ANSIBLE MANAGED BLOCK - Vim Config'
+        block: |
+          " Source vim configuration from repo
+          if filereadable("{{ playbook_dir }}/dotfiles/.vimrc")
+            source {{ playbook_dir }}/dotfiles/.vimrc
+          endif
 
-    - name: Symlink tmux configuration
-      ansible.builtin.file:
-        src: '{{ playbook_dir }}/dotfiles/.tmux.conf'
-        dest: '{{ ansible_env.HOME }}/.tmux.conf'
-        state: link
-        force: yes
+    - name: Source tmux configuration from repo
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.tmux.conf'
+        create: yes
+        mode: '0644'
+        marker: '# {mark} ANSIBLE MANAGED BLOCK - Tmux Config'
+        block: |
+          # Source tmux configuration from repo
+          source-file {{ playbook_dir }}/dotfiles/.tmux.conf
 
     - name: Symlink editorconfig
       ansible.builtin.file:
         src: '{{ playbook_dir }}/dotfiles/.editorconfig'
         dest: '{{ ansible_env.HOME }}/.editorconfig'
         state: link
-        force: yes
 
     # ============================================
     # Shell Configurations
@@ -65,7 +105,6 @@
         src: '{{ playbook_dir }}/dotfiles/.inputrc'
         dest: '{{ ansible_env.HOME }}/.inputrc'
         state: link
-        force: yes
 
     - name: Source aliases and local config in .zshrc
       ansible.builtin.blockinfile:
@@ -97,21 +136,18 @@
         src: '{{ playbook_dir }}/dotfiles/.curlrc'
         dest: '{{ ansible_env.HOME }}/.curlrc'
         state: link
-        force: yes
 
     - name: Symlink wgetrc
       ansible.builtin.file:
         src: '{{ playbook_dir }}/dotfiles/.wgetrc'
         dest: '{{ ansible_env.HOME }}/.wgetrc'
         state: link
-        force: yes
 
     - name: Symlink terraformrc
       ansible.builtin.file:
         src: '{{ playbook_dir }}/dotfiles/.terraformrc'
         dest: '{{ ansible_env.HOME }}/.terraformrc'
         state: link
-        force: yes
 
     - name: Create Terraform plugin cache directory
       ansible.builtin.file:

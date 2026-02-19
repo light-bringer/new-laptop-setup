@@ -17,6 +17,12 @@
         state: present
       tags: [vscode]
 
+    - name: Install IntelliJ IDEA (Java IDE)
+      community.general.homebrew_cask:
+        name: intellij-idea
+        state: present
+      tags: [intellij, idea]
+
     - name: Install iTerm2 (Better terminal)
       community.general.homebrew_cask:
         name: iterm2

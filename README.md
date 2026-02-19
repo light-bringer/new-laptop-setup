@@ -13,7 +13,9 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 🦊 **GitLab** SSH authentication
 - ⚙️ **Git** user configuration
 - 🚀 **goto** - Custom shell function for quick Git repository navigation (GitLab default, GitHub optional)
-- 🛠️ **CLI Development tools** (50+ tools including git, jq, curl, kubectl, terraform, awscli)
+- 🛠️ **CLI Development tools** (50+ tools including git, delta, jq, curl, kubectl, terraform, awscli)
+- ☕ **Java** (OpenJDK 17 LTS with auto-configured JAVA_HOME and PATH)
+- 💎 **Ruby** (Latest via Homebrew with PATH configuration)
 - 🐹 **Go** programming language with GOPATH configuration
 - 📦 **NVM** (Node Version Manager) with latest LTS Node.js
 - ⚡ **pnpm** - Fast, disk space efficient package manager
@@ -87,11 +89,10 @@ During setup, you'll be prompted for:
    - Default organization/user: Defaults to `vercara`
    - Root directory: Defaults to `~/dev/src`
 
-5. **Oh My Zsh Theme** (choose one):
-   - `robbyrussell` (default, minimal)
-   - `agnoster` (powerline-style, requires Nerd Font)
-   - `powerlevel10k` (highly customizable, requires Nerd Font)
-   - `pure` (minimal, async)
+5. **Terminal Prompt**:
+   - **Starship** is used as the default prompt (Oh My Zsh theme is disabled)
+   - Fast, customizable, cross-shell prompt
+   - No additional configuration needed - works out of the box
 
 ### Pre-Setup Checklist
 
@@ -104,7 +105,6 @@ During setup, you'll be prompted for:
 ✅ Git name and email decided
 ✅ goto platform choice decided (gitlab/github)
 ✅ goto default organization decided (defaults to vercara)
-✅ Oh My Zsh theme preference decided
 
 ### How to Create Required Credentials
 
@@ -224,7 +224,7 @@ Some components are not installed by default and must be explicitly requested:
 ```
 
 **What's installed by default**: Docker Desktop
-**What's optional**: VSCode, iTerm2, Chrome, Firefox, Slack, Postman, Notion, TablePlus, Figma, Insomnia, Rectangle
+**What's optional**: VSCode, IntelliJ IDEA, iTerm2, Chrome, Firefox, Slack, Postman, Notion, TablePlus, Figma, Insomnia, Rectangle
 
 ## Selective Execution
 
@@ -293,13 +293,13 @@ Run only specific components using Ansible tags:
 - `pnpm` - pnpm package manager
 - `python` / `py` - Python with pip, pipx, and virtualenv
 - `applications` / `apps` / `gui` - GUI applications
-- Individual app tags: `docker`, `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
+- Individual app tags: `docker`, `vscode`, `intellij`, `idea`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
 
 **Optional (not installed by default)**:
 - `claude-code` / `claude` - Claude Code CLI
 - `github-copilot` / `copilot` - GitHub Copilot CLI
-- `gui-optional` - All optional GUI apps (VSCode, Chrome, Slack, etc.)
-- Individual apps: `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
+- `gui-optional` - All optional GUI apps (VSCode, IntelliJ IDEA, Chrome, Slack, etc.)
+- Individual apps: `vscode`, `intellij` / `idea`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
 
 **Installed by default**:
 - `docker` - Docker Desktop only
@@ -368,14 +368,58 @@ goto teamname/frontend    # Clones teamname/frontend if needed, then cd's into i
 
 ## Dotfiles
 
-The following dotfiles are symlinked from this repository to your home directory:
+This setup includes a comprehensive collection of dotfiles for maximum productivity:
 
-- `.gitignore_global` - Global gitignore patterns for macOS, IDEs, and common build artifacts
-- `.vimrc` - Vim configuration with sensible defaults
-- `.tmux.conf` - Tmux configuration with improved key bindings
-- `.editorconfig` - EditorConfig settings for consistent coding styles
+### Configuration Files (Symlinked)
 
-You can customize these files in the `dotfiles/` directory, and changes will apply immediately (since they're symlinked).
+- **`.gitignore_global`** - Global gitignore patterns for macOS, IDEs, and build artifacts
+- **`.gitconfig_global`** - Extensive git aliases and configuration (includes delta for better diffs)
+- **`.vimrc`** - Vim configuration with sensible defaults
+- **`.tmux.conf`** - Tmux configuration with improved key bindings (C-a prefix, mouse support)
+- **`.editorconfig`** - EditorConfig settings for consistent coding styles
+- **`.inputrc`** - Readline configuration for better terminal input
+- **`.curlrc`** - curl configuration and defaults
+- **`.wgetrc`** - wget configuration and defaults
+- **`.terraformrc`** - Terraform configuration with plugin cache
+
+### Shell Enhancements (Sourced in .zshrc)
+
+- **`.aliases`** - 100+ productivity aliases:
+  - Navigation shortcuts (`..`, `...`, etc.)
+  - Enhanced ls with eza support
+  - Comprehensive git shortcuts (`gs`, `ga`, `gp`, etc.)
+  - Docker commands (`d`, `dc`, `dps`, etc.)
+  - Kubernetes shortcuts (`k`, `kgp`, `kex`, etc.)
+  - Terraform shortcuts (`tf`, `tfp`, `tfa`, etc.)
+  - NPM/pnpm shortcuts
+  - Python shortcuts
+  - System utilities and safety aliases
+
+- **`.functions`** - Custom shell functions for advanced workflows
+
+- **`.zshrc.local`** - User-specific customizations:
+  - **Auto-configured PATHs** for brew-installed tools:
+    - Java/OpenJDK (JAVA_HOME + PATH)
+    - Ruby (PATH + compiler flags)
+    - IntelliJ IDEA command line launcher
+  - Tool integrations:
+    - Cargo/Rust environment
+    - iTerm2 shell integration
+    - Google Cloud SDK
+    - JetBrains Toolbox
+    - Docker CLI completions
+  - Personal aliases and custom PATH modifications
+  - **Editable without affecting repo** - customize freely!
+
+### Key Features
+
+✅ **Git delta integration** - Beautiful, syntax-highlighted diffs
+✅ **100+ productivity aliases** - Save keystrokes daily
+✅ **Starship prompt** - Fast, informative terminal prompt
+✅ **Symlinked design** - Changes in repo apply immediately
+✅ **User customization** - `.zshrc.local` for personal settings
+
+You can customize files in the `dotfiles/` directory, and changes apply immediately (symlinked).
 
 ## Architecture
 
@@ -414,11 +458,19 @@ new-laptop-setup/
 │   ├── applications.yml     # GUI applications (Docker, VSCode, etc.)
 │   ├── claude-code.yml      # Claude Code CLI (optional)
 │   └── github-copilot.yml   # GitHub Copilot CLI (optional)
-├── dotfiles/                 # Example dotfiles to symlink
-│   ├── .gitignore_global
-│   ├── .vimrc
-│   ├── .tmux.conf
-│   └── .editorconfig
+├── dotfiles/                 # Comprehensive dotfiles
+│   ├── .aliases             # Shell aliases (git, docker, k8s, terraform, etc.)
+│   ├── .functions           # Custom shell functions
+│   ├── .gitconfig_global    # Git aliases and configuration
+│   ├── .gitignore_global    # Global gitignore patterns
+│   ├── .vimrc               # Vim configuration
+│   ├── .tmux.conf           # Tmux configuration
+│   ├── .editorconfig        # EditorConfig settings
+│   ├── .inputrc             # Readline configuration
+│   ├── .curlrc              # curl configuration
+│   ├── .wgetrc              # wget configuration
+│   ├── .terraformrc         # Terraform configuration
+│   └── .zshrc.local         # User-specific customizations (not managed by setup)
 ├── ansible_collections/      # Vendored Ansible collections
 └── roles/                    # Vendored Ansible roles
 ```

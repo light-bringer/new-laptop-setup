@@ -27,7 +27,6 @@ Users need the following before running setup:
 - goto platform choice: `gitlab` (default) or `github`
 - goto default org/user: Defaults to `vercara`
 - goto root directory: Defaults to `~/dev/src`
-- Oh My Zsh theme: `robbyrussell` (default), `agnoster`, `powerlevel10k`, or `pure`
 
 ### Optional Credentials
 - **GitHub Copilot**: Active subscription required
@@ -100,7 +99,7 @@ ansible-playbook main.yml --syntax-check
   - **goto.yml**: Install goto shell function for quick repository navigation (GitLab default)
   - **github-setup.yml**: GitHub SSH authentication via API
   - **gitlab-setup.yml**: GitLab SSH authentication via API
-  - **dev-tools.yml**: Common development tools via Homebrew
+  - **dev-tools.yml**: Common development tools via Homebrew (includes git-delta, openjdk@17, ruby)
   - **golang.yml**: Go installation and GOPATH configuration
   - **nvm.yml**: NVM installation with latest LTS Node.js
   - **pnpm.yml**: pnpm package manager installation
@@ -163,27 +162,48 @@ The automation prompts for tokens, stores them in `~/.gitconfig`, and uses them 
 
 ## Dotfiles Management
 
-The `dotfiles/` directory contains example configurations that are **symlinked** to the home directory:
+The `dotfiles/` directory contains comprehensive configurations that are **symlinked** or **sourced**:
 
 - **Why symlinks?** Changes to files in the repo automatically apply to the system
 - **force: yes** in Ansible replaces existing dotfiles (users can remove symlinks if they prefer custom configs)
 
-Included dotfiles:
+### Symlinked Files:
 - `.gitignore_global` - Global gitignore patterns for macOS, IDEs, build artifacts
+- `.gitconfig_global` - Extensive git aliases and delta configuration (included in .gitconfig)
 - `.vimrc` - Sensible Vim defaults (line numbers, syntax highlighting, search settings)
 - `.tmux.conf` - Improved tmux key bindings (C-a prefix, mouse support, vi mode)
 - `.editorconfig` - Consistent coding styles across editors
+- `.inputrc` - Readline configuration for better terminal input
+- `.curlrc` - curl defaults and configuration
+- `.wgetrc` - wget defaults and configuration
+- `.terraformrc` - Terraform plugin cache configuration
+
+### Sourced in .zshrc:
+- `.aliases` - 100+ productivity aliases (git, docker, kubernetes, terraform, npm, python, aws, etc.)
+- `.functions` - Custom shell functions for advanced workflows
+- `.zshrc.local` - User-specific customizations with auto-configured PATHs:
+  - Java/OpenJDK (auto-detects brew installation, sets JAVA_HOME and PATH)
+  - Ruby (auto-detects brew installation, sets PATH and compiler flags)
+  - IntelliJ IDEA command line launcher PATH
+  - Cargo/Rust environment
+  - iTerm2, Google Cloud SDK, JetBrains Toolbox integrations
+  - Docker CLI completions
+  - Custom aliases and PATH modifications
+
+**Key Feature:** `.zshrc.local` auto-configures PATHs for brew-installed tools and allows users to add personal configurations without modifying repo-managed files. This file is sourced but never overwritten by Ansible.
 
 ## Oh My Zsh Integration
 
 The `tasks/ohmyzsh-setup.yml` task:
 
 1. Downloads and runs official Oh My Zsh installer with `RUNZSH=no CHSH=no`
-2. Prompts user for theme selection (robbyrussell, agnoster, powerlevel10k, pure)
+2. **Disables Oh My Zsh theme** - Starship prompt is used instead
 3. Configures plugins: `git brew docker kubectl`
 4. Ensures `.zshrc` sources `.zprofile` for Homebrew PATH
 
 **Why RUNZSH=no?** Prevents installer from exec'ing zsh, which would break Ansible execution
+
+**Theme:** Starship is the mandatory prompt theme. Oh My Zsh is installed for its plugin system and framework, but the theme system is disabled in favor of Starship.
 
 ## goto Shell Function
 

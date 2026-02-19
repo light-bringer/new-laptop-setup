@@ -190,6 +190,18 @@ alias update='brew update && brew upgrade && brew cleanup'
 alias cleanup='find . -type f -name "*.DS_Store" -ls -delete'
 
 # ============================================
+# AWS & Cloud Tools
+# ============================================
+# AWS MFA helper (adjust path based on your Python installation)
+if [ -f "$HOME/Library/Python/3.11/bin/aws-mfa" ]; then
+  alias aws-mfa="$HOME/Library/Python/3.11/bin/aws-mfa"
+elif [ -f "$HOME/Library/Python/3.12/bin/aws-mfa" ]; then
+  alias aws-mfa="$HOME/Library/Python/3.12/bin/aws-mfa"
+elif command -v aws-mfa &> /dev/null; then
+  alias aws-mfa='aws-mfa'
+fi
+
+# ============================================
 # Fun
 # ============================================
 alias please='sudo'

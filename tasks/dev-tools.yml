@@ -8,6 +8,7 @@
     - git
     - gh              # GitHub CLI
     - git-lfs         # Git Large File Storage
+    - git-delta       # Better git diffs
 
     # Text Processing & Search
     - jq              # JSON processor
@@ -37,6 +38,10 @@
     - make            # Build automation
     - cmake           # Cross-platform build system
     - pkg-config      # Package configuration
+
+    # Programming Languages & Runtimes
+    - openjdk@17      # Java 17 LTS
+    - ruby            # Ruby programming language
 
     # Container & Cloud Tools
     - kubectl         # Kubernetes CLI

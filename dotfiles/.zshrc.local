@@ -1,0 +1,88 @@
+# Local Shell Configuration
+# This file is for user-specific customizations that shouldn't be in the repo
+# Add your personal aliases, PATH modifications, and environment variables here
+
+# ============================================
+# Custom Aliases
+# ============================================
+# Example: alias aws-mfa='/Users/username/Library/Python/3.11/bin/aws-mfa'
+
+# ============================================
+# PATH Additions
+# ============================================
+# Add custom directories to PATH
+# export PATH="/your/custom/path:$PATH"
+
+# ============================================
+# Environment Variables
+# ============================================
+# Set custom environment variables
+# export MY_CUSTOM_VAR="value"
+
+# ============================================
+# Tool-Specific Configuration
+# ============================================
+
+# Java/OpenJDK (installed via Homebrew)
+if [ -d "/opt/homebrew/opt/openjdk@17" ]; then
+  export JAVA_HOME="/opt/homebrew/opt/openjdk@17"
+  export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+fi
+
+# Ruby (Homebrew)
+if [ -d "/opt/homebrew/opt/ruby/bin" ]; then
+  export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+  # For compilers to find ruby
+  export LDFLAGS="-L/opt/homebrew/opt/ruby/lib"
+  export CPPFLAGS="-I/opt/homebrew/opt/ruby/include"
+fi
+
+# Cargo/Rust
+if [ -f "$HOME/.cargo/env" ]; then
+  source "$HOME/.cargo/env"
+fi
+
+# iTerm2 Shell Integration
+if [ -f "${HOME}/.iterm2_shell_integration.zsh" ]; then
+  source "${HOME}/.iterm2_shell_integration.zsh"
+fi
+
+# Google Cloud SDK
+if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then
+  source "$HOME/google-cloud-sdk/path.zsh.inc"
+fi
+
+if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then
+  source "$HOME/google-cloud-sdk/completion.zsh.inc"
+fi
+
+# JetBrains Toolbox
+if [ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ]; then
+  export PATH="$PATH:$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+fi
+
+# IntelliJ IDEA command line launcher
+if [ -d "/Applications/IntelliJ IDEA.app/Contents/MacOS" ]; then
+  export PATH="$PATH:/Applications/IntelliJ IDEA.app/Contents/MacOS"
+fi
+
+# Antigravity
+if [ -d "$HOME/.antigravity/antigravity/bin" ]; then
+  export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+fi
+
+# Local bin
+if [ -d "$HOME/.local/bin" ]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+
+# ============================================
+# Completions
+# ============================================
+
+# Docker CLI completions (added by Docker Desktop)
+if [ -d "$HOME/.docker/completions" ]; then
+  fpath=($HOME/.docker/completions $fpath)
+  autoload -Uz compinit
+  compinit
+fi

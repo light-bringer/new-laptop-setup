@@ -67,7 +67,7 @@
         state: link
         force: yes
 
-    - name: Source aliases in .zshrc
+    - name: Source aliases and local config in .zshrc
       ansible.builtin.blockinfile:
         path: '{{ ansible_env.HOME }}/.zshrc'
         create: yes
@@ -82,6 +82,11 @@
           # Load custom functions
           if [ -f {{ playbook_dir }}/dotfiles/.functions ]; then
             source {{ playbook_dir }}/dotfiles/.functions
+          fi
+
+          # Load local user-specific configuration
+          if [ -f {{ playbook_dir }}/dotfiles/.zshrc.local ]; then
+            source {{ playbook_dir }}/dotfiles/.zshrc.local
           fi
 
     # ============================================

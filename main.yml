@@ -4,12 +4,15 @@
   roles:
     - role: elliotweiser.osx-command-line-tools
       tags: [cli-tools]
-    - role: geerlingguy.mac.homebrew
-      tags: [homebrew]
-      vars:
-        homebrew_installed_packages:
-          - git
-          - jq
+    # geerlingguy.mac.homebrew role removed - Homebrew is already installed
+    # and configured by bin/laptop.run before Ansible runs. This eliminates
+    # the need for sudo/become during Ansible execution.
+    # - role: geerlingguy.mac.homebrew
+    #   tags: [homebrew]
+    #   vars:
+    #     homebrew_installed_packages:
+    #       - git
+    #       - jq
 
   tasks:
     - name: Generate SSH keys if needed

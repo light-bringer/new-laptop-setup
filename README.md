@@ -22,6 +22,162 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 🤖 **AI CLI Tools** - Claude Code CLI, GitHub Copilot CLI (optional)
 - 🔄 **Update scripts** for easy maintenance (laptop.update, laptop.upgrade)
 
+## Prerequisites
+
+Before running the setup, ensure you have the following:
+
+### System Requirements
+
+- **macOS**: macOS 12 (Monterey) or later
+- **Architecture**: Apple Silicon (M1/M2/M3) or Intel
+- **Admin Access**: Sudo privileges required for installation
+- **Internet Connection**: Required for downloading packages and dependencies
+- **Disk Space**: At least 5GB free for development tools and applications
+
+### Required Credentials
+
+You'll need to create these before starting the setup:
+
+#### 1. GitHub Personal Access Token (Required)
+- **Create at**: https://github.com/settings/tokens
+- **Required scopes**:
+  - `admin:public_key` - Upload SSH keys
+  - `read:user` - Read user profile
+  - `repo` - Repository access
+- **Copy and save** the token - you'll need it during setup
+
+#### 2. GitLab Personal Access Token (Required)
+- **Create at**: https://gitlab.com/-/profile/personal_access_tokens
+- **Required scopes**:
+  - `api` - Full API access
+  - `read_user` - Read user profile
+  - `write_repository` - Write to repositories
+- **Copy and save** the token - you'll need it during setup
+
+### Optional Credentials (for optional features)
+
+#### GitHub Copilot (Optional)
+- **Subscription**: Active GitHub Copilot subscription
+- **Authentication**: Handled via `gh auth login` after installation
+
+#### Claude Code CLI (Optional)
+- **API Key**: Anthropic API key
+- **Create at**: https://console.anthropic.com/
+
+### Information to Prepare
+
+During setup, you'll be prompted for:
+
+1. **Git Configuration**:
+   - Your full name (for git commits)
+   - Your email address (for git commits)
+
+2. **GitHub Information**:
+   - GitHub username
+   - GitHub email
+   - GitHub Personal Access Token (created above)
+
+3. **GitLab Information**:
+   - GitLab username
+   - GitLab email
+   - GitLab Personal Access Token (created above)
+
+4. **goto Function Setup**:
+   - Git platform choice: `gitlab` (default) or `github`
+   - Default organization/user: Defaults to `vercara`
+   - Root directory: Defaults to `~/dev/src`
+
+5. **Oh My Zsh Theme** (choose one):
+   - `robbyrussell` (default, minimal)
+   - `agnoster` (powerline-style, requires Nerd Font)
+   - `powerlevel10k` (highly customizable, requires Nerd Font)
+   - `pure` (minimal, async)
+
+### Pre-Setup Checklist
+
+✅ macOS 12+ installed
+✅ Admin/sudo access available
+✅ GitHub Personal Access Token created and saved
+✅ GitLab Personal Access Token created and saved
+✅ GitHub username and email ready
+✅ GitLab username and email ready
+✅ Git name and email decided
+✅ goto platform choice decided (gitlab/github)
+✅ goto default organization decided (defaults to vercara)
+✅ Oh My Zsh theme preference decided
+
+### How to Create Required Credentials
+
+#### Creating a GitHub Personal Access Token
+
+1. **Sign in** to GitHub: https://github.com
+2. Click your **profile photo** (top right) → **Settings**
+3. Scroll down and click **Developer settings** (left sidebar, bottom)
+4. Click **Personal access tokens** → **Tokens (classic)**
+5. Click **Generate new token** → **Generate new token (classic)**
+6. Fill out the form:
+   - **Note**: `Laptop Setup - SSH Key Upload` (or any descriptive name)
+   - **Expiration**: Choose duration (recommend 90 days or No expiration)
+   - **Select scopes**:
+     - ✅ `repo` (Full control of private repositories)
+     - ✅ `admin:public_key` (Full control of user public keys)
+     - ✅ `read:user` (Read ALL user profile data)
+7. Click **Generate token**
+8. **Copy the token** immediately - you won't be able to see it again!
+9. Save it securely (password manager or temporary note)
+
+#### Creating a GitLab Personal Access Token
+
+1. **Sign in** to GitLab: https://gitlab.com
+2. Click your **avatar** (top right) → **Edit profile**
+3. In the left sidebar, click **Access Tokens**
+4. Fill out the form:
+   - **Token name**: `Laptop Setup - SSH Key Upload` (or any descriptive name)
+   - **Expiration date**: Choose a date (optional but recommended for security)
+   - **Select scopes**:
+     - ✅ `api` (Grants complete read/write access to the API)
+     - ✅ `read_user` (Grants read-only access to your profile)
+     - ✅ `write_repository` (Allows read-write access to repositories)
+5. Click **Create personal access token**
+6. **Copy the token** immediately - you won't be able to see it again!
+7. Save it securely (password manager or temporary note)
+
+#### Getting Your GitHub Username and Email
+
+Your GitHub username is visible in your profile URL:
+- URL format: `https://github.com/YOUR-USERNAME`
+- Or go to https://github.com/settings/profile to see your username
+
+Your GitHub email (for commits):
+- Same page: https://github.com/settings/emails
+- Use your primary email or a GitHub-provided noreply email
+
+#### Getting Your GitLab Username and Email
+
+Your GitLab username is visible in your profile URL:
+- URL format: `https://gitlab.com/YOUR-USERNAME`
+- Or go to https://gitlab.com/-/profile to see your username
+
+Your GitLab email (for commits):
+- Same page: https://gitlab.com/-/profile
+- Use your primary email
+
+#### Optional: Getting Anthropic API Key (for Claude Code CLI)
+
+1. Go to: https://console.anthropic.com/
+2. Sign in or create an account
+3. Go to **API Keys** section
+4. Click **Create Key**
+5. Give it a name (e.g., "Claude Code CLI")
+6. Copy and save the API key securely
+
+#### Optional: GitHub Copilot Subscription
+
+1. Go to: https://github.com/features/copilot
+2. Click **Start free trial** or **Buy now**
+3. Follow the subscription process
+4. Ensure your GitHub account has active Copilot access
+
 ## Quick Start
 
 ### Initial Setup

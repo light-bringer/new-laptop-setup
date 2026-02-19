@@ -6,6 +6,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository provides Ansible-based automation for configuring macOS developer environments. It's a clean, modern laptop setup tool that installs essential development tools, configures SSH access to GitHub and GitLab, and sets up a productive shell environment with Oh My Zsh and curated dotfiles.
 
+## Prerequisites
+
+Users need the following before running setup:
+
+### System Requirements
+- macOS 12+ (Monterey or later)
+- Admin/sudo access
+- Internet connection
+- 5GB+ free disk space
+
+### Required Credentials
+- **GitHub Personal Access Token**: Scopes: `admin:public_key`, `read:user`, `repo` (https://github.com/settings/tokens)
+- **GitLab Personal Access Token**: Scopes: `api`, `read_user`, `write_repository` (https://gitlab.com/-/profile/personal_access_tokens)
+
+### Information Needed During Setup
+- Git name and email (for commits)
+- GitHub username and email
+- GitLab username and email
+- goto platform choice: `gitlab` (default) or `github`
+- goto default org/user: Defaults to `vercara`
+- goto root directory: Defaults to `~/dev/src`
+- Oh My Zsh theme: `robbyrussell` (default), `agnoster`, `powerlevel10k`, or `pure`
+
+### Optional Credentials
+- **GitHub Copilot**: Active subscription required
+- **Claude Code CLI**: Anthropic API key (https://console.anthropic.com/)
+
+The README.md contains detailed step-by-step instructions for creating all required credentials.
+
 ## Key Commands
 
 ### Initial Setup

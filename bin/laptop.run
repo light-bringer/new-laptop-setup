@@ -38,6 +38,8 @@ main() {
   ANSIBLE_PYTHON_INTERPRETER="$(command -v python3)"
   export PATH ANSIBLE_PYTHON_INTERPRETER
 
+  ensure_ansible_dependencies
+
   ansible-playbook main.yml "$@"
 }
 
@@ -122,6 +124,16 @@ locate_ansible_python_bin() {
       head -1
   )"
   echo "$(brew --prefix "${linked_python_version}")/bin"
+}
+
+ensure_ansible_dependencies() {
+  if [ -f "requirements.yml" ]; then
+    echo 'Installing Ansible roles and collections from requirements.yml...'
+    ansible-galaxy install -r requirements.yml
+    echo 'Ansible dependencies installed successfully!'
+  else
+    echo 'Warning: requirements.yml not found. Skipping Ansible dependencies installation.'
+  fi
 }
 
 main "${@}"

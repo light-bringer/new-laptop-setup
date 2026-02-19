@@ -32,8 +32,8 @@ main() {
       exit 1
     fi
 
-    # Export for Ansible to use
-    export ANSIBLE_BECOME_PASSWORD="$SUDO_PASSWORD"
+    # Store password for Ansible (passed via --extra-vars, not environment)
+    # export ANSIBLE_BECOME_PASSWORD="$SUDO_PASSWORD"  # Doesn't work with connection: local
   fi
 
   ## sudo refresh trick via https://github.com/geerlingguy/dotfiles/blob/8489a049/.osx#L32
@@ -43,7 +43,7 @@ main() {
     kill -0 "$$" || exit
   done 2>/dev/null &
 
-  # Ansible will use ANSIBLE_BECOME_PASSWORD from above
+  # Password will be passed to Ansible via --extra-vars below
 
   ## make `brew` available and all Homebrew-installed executables first in $PATH for subsequent steps
   ensure_homebrew
@@ -63,7 +63,10 @@ main() {
   echo "Ansible will now configure your laptop..."
   echo ""
 
-  ansible-playbook main.yml "$@"
+  # Pass sudo password via --extra-vars (works with connection: local)
+  ansible-playbook main.yml \
+    --extra-vars "ansible_become_password='$SUDO_PASSWORD'" \
+    "$@"
 }
 
 retry() {

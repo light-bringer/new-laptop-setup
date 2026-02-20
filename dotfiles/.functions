@@ -59,7 +59,8 @@ backup() {
 # ============================================
 
 # Git clone and cd into directory
-gcl() {
+# Note: 'gcl' is already an alias from Oh My Zsh git plugin, so we use 'gclcd'
+gclcd() {
   git clone "$1" && cd "$(basename "$1" .git)"
 }
 

@@ -426,7 +426,7 @@ You can customize files in the `dotfiles/` directory, and changes apply immediat
 ### Execution Flow
 
 1. **bootstrap.sh** - Entry point that installs Homebrew, adds bin/ to PATH, then delegates to `bin/laptop.run`
-2. **bin/laptop.run** - Installs Ansible via Homebrew, configures Python environment, runs `ansible-playbook main.yml`
+2. **bin/laptop.run** - Installs Ansible via Homebrew, installs Ansible dependencies (roles & collections), configures Python environment, runs `ansible-playbook main.yml`
 3. **main.yml** - Main Ansible playbook that orchestrates all roles and tasks
 
 ### Directory Structure

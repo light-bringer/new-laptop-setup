@@ -82,3 +82,7 @@
     - name: Install GitHub Copilot CLI (optional - not installed by default)
       import_tasks: tasks/github-copilot.yml
       tags: [never, github-copilot, copilot]
+
+    - name: Install database CLI tools (optional - not installed by default)
+      import_tasks: tasks/database-tools.yml
+      tags: [never, database, db]

@@ -49,11 +49,6 @@
     - terraform       # Infrastructure as code
     - awscli          # AWS CLI
 
-    # Database CLIs
-    - postgresql@16   # PostgreSQL client
-    - mysql-client    # MySQL client
-    - redis           # Redis CLI
-
     # Other Utilities
     - gnupg           # GPG encryption
     - openssl         # SSL/TLS toolkit

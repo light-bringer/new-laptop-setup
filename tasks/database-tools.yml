@@ -1,0 +1,17 @@
+---
+- name: Install database CLI tools (optional)
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - postgresql@16   # PostgreSQL client
+    - mysql-client    # MySQL client
+    - redis           # Redis CLI
+
+- name: Display database tools installation message
+  ansible.builtin.debug:
+    msg: |
+      Database CLI tools installed:
+      - PostgreSQL 16 client (psql)
+      - MySQL client (mysql)
+      - Redis CLI (redis-cli)

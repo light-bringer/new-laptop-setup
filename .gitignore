@@ -13,3 +13,6 @@ __pycache__/
 
 # Ansible retry files
 *.retry
+
+# Ansible vendored dependencies (reinstall via ansible-galaxy)
+roles/

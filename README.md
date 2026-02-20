@@ -49,7 +49,7 @@ You'll need to create these before starting the setup:
 - **Copy and save** the token - you'll need it during setup
 
 #### 2. GitLab Personal Access Token (Required)
-- **Create at**: https://gitlab.com/-/profile/personal_access_tokens
+- **Create at**: https://gitlab.com/-/user_settings/personal_access_tokens
 - **Required scopes**:
   - `api` - Full API access
   - `read_user` - Read user profile

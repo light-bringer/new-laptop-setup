@@ -30,6 +30,19 @@
         state: directory
         mode: '0755'
 
+    - name: Configure Go private module settings in .zshrc.local
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc.local'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Go Private Modules"
+        block: |
+          # Go private module configuration (skip proxy for private repos)
+          # Prevents slow `go mod tidy` by bypassing public proxy for private modules
+          export GOPRIVATE="github.com/vercara/*,gitlab.com/vercara/*"
+          export GONOPROXY="github.com/vercara/*,gitlab.com/vercara/*"
+          export GONOSUMDB="github.com/vercara/*,gitlab.com/vercara/*"
+
     - name: Verify Go installation
       ansible.builtin.command: go version
       register: go_version

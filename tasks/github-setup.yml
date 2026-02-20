@@ -121,6 +121,17 @@
         value: 'https://github.com/'
         scope: global
 
+    - name: Export GitHub credentials as environment variables
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc.local'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - GitHub Environment"
+        block: |
+          # GitHub credentials for API access
+          export GITHUB_USER="{{ github_username_prompt.user_input }}"
+          export GITHUB_TOKEN="{{ gh_token }}"
+
     - name: Verify SSH connection to GitHub
       ansible.builtin.shell: ssh -T git@github.com 2>&1
       register: github_ssh_verify

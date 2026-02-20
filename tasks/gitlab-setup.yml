@@ -115,6 +115,17 @@
         value: 'https://gitlab.com/'
         scope: global
 
+    - name: Export GitLab credentials as environment variables
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc.local'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - GitLab Environment"
+        block: |
+          # GitLab credentials for API access
+          export GITLAB_USER="{{ gitlab_username_prompt.user_input }}"
+          export GITLAB_TOKEN="{{ gl_token }}"
+
     - name: Verify SSH connection to GitLab
       ansible.builtin.shell: ssh -T git@gitlab.com 2>&1
       register: gitlab_ssh_verify

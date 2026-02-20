@@ -71,7 +71,7 @@
       import_tasks: tasks/python.yml
       tags: [python, py]
 
-    - name: Install GUI applications (Docker by default, others optional)
+    - name: Install GUI applications (optional - not installed by default)
       import_tasks: tasks/applications.yml
       tags: [applications, apps, gui]
 

@@ -1,10 +1,14 @@
 ---
-# Docker Desktop - Installed by default
+# Docker Desktop - Optional (not installed by default)
+# Note: Docker CLI plugins directory is pre-created by bin/laptop.run
 - name: Install Docker Desktop
   community.general.homebrew_cask:
     name: docker
     state: present
-  tags: [docker]
+  environment:
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+    HOMEBREW_NO_ENV_HINTS: "1"
+  tags: [never, docker]
 
 # Optional GUI applications - NOT installed by default
 # Install with: ./bin/laptop.run --tags gui-optional

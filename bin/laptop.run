@@ -124,6 +124,10 @@ ensure_ansible_using_homebrew() {
 ensure_directory_permissions() {
   ## workaround for recurring directory permission changes post-Sonoma upgrade
   sudo chmod 0755 /opt /private/etc
+
+  ## Pre-create Docker CLI plugins directory (required by Docker Desktop installation)
+  sudo mkdir -p /usr/local/cli-plugins
+  sudo chmod 0755 /usr/local/cli-plugins
 }
 
 ensure_jq_using_homebrew() {

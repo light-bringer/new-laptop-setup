@@ -16,3 +16,4 @@ __pycache__/
 
 # Ansible vendored dependencies (reinstall via ansible-galaxy)
 roles/
+ansible_collections/

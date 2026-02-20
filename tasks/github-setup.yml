@@ -136,4 +136,4 @@
       ansible.builtin.shell: ssh -T git@github.com 2>&1
       register: github_ssh_verify
       changed_when: false
-      failed_when: '"successfully authenticated" not in github_ssh_verify.stderr'
+      failed_when: '"successfully authenticated" not in github_ssh_verify.stdout'

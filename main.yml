@@ -86,3 +86,7 @@
     - name: Install database CLI tools (optional - not installed by default)
       import_tasks: tasks/database-tools.yml
       tags: [never, database, db]
+
+    - name: Configure AWS SSO (optional - not configured by default)
+      import_tasks: tasks/aws-sso.yml
+      tags: [never, aws, aws-sso]

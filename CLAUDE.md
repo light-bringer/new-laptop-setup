@@ -59,6 +59,7 @@ These scripts are located in `bin/` and added to PATH via `~/.zshenv` after the 
 # Install optional components (not installed by default)
 ./bin/laptop.run --tags claude-code      # Install Claude Code CLI
 ./bin/laptop.run --tags github-copilot   # Install GitHub Copilot CLI
+./bin/laptop.run --tags aws-sso          # Configure AWS SSO
 
 # Preview changes without applying
 ./bin/laptop.run --check
@@ -107,6 +108,7 @@ ansible-playbook main.yml --syntax-check
   - **applications.yml**: GUI applications via Homebrew Cask (Docker, VSCode, etc.)
   - **claude-code.yml**: Claude Code CLI installation (optional)
   - **github-copilot.yml**: GitHub Copilot CLI installation via gh extension (optional)
+  - **aws-sso.yml**: AWS SSO configuration for Vercara (optional)
 - **dotfiles/**: Example dotfiles to symlink
   - **.gitignore_global**: Global gitignore patterns
   - **.vimrc**: Vim configuration
@@ -140,6 +142,7 @@ Defined in `main.yml`:
 **Optional Components** (not installed by default, use `--tags` to enable):
 - **tasks/claude-code.yml**: Install Claude Code CLI via npm
 - **tasks/github-copilot.yml**: Install GitHub Copilot CLI via gh extension
+- **tasks/aws-sso.yml**: Configure AWS SSO for Vercara (prompts for account ID, role, profile name)
 
 ## GitHub/GitLab Integration
 

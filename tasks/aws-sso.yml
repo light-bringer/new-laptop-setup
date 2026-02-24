@@ -1,0 +1,109 @@
+---
+- name: Configure AWS SSO
+  block:
+    - name: Ensure AWS CLI is installed
+      community.general.homebrew:
+        name: awscli
+        state: present
+
+    - name: Create ~/.aws directory
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.aws"
+        state: directory
+        mode: '0700'
+
+    - name: Configure Vercara SSO session in ~/.aws/config
+      ansible.builtin.blockinfile:
+        path: "{{ ansible_env.HOME }}/.aws/config"
+        create: yes
+        mode: '0600'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - Vercara SSO Session"
+        block: |
+          [sso-session vercara-sso]
+          sso_start_url = https://vercara.awsapps.com/start#/
+          sso_region = us-east-1
+          sso_registration_scopes = sso:account:access
+
+    - name: Prompt for AWS profile name
+      ansible.builtin.pause:
+        prompt: |
+          === AWS SSO Profile Setup ===
+          Visit https://vercara.awsapps.com/start#/ to find your account ID and role.
+
+          Enter a name for this AWS CLI profile
+          (e.g., Administrator-182362126582, or press Enter for 'vercara')
+      register: aws_profile_name_prompt
+
+    - name: Set profile name fact
+      ansible.builtin.set_fact:
+        aws_profile_name: "{{ (aws_profile_name_prompt.user_input | trim) if (aws_profile_name_prompt.user_input | trim) != '' else 'vercara' }}"
+
+    - name: Prompt for AWS Account ID
+      ansible.builtin.pause:
+        prompt: "Enter your AWS Account ID (12-digit number, e.g., 182362126582)"
+      register: aws_account_id_prompt
+
+    - name: Prompt for IAM Role name
+      ansible.builtin.pause:
+        prompt: |
+          Enter the IAM Role name for this profile
+          (press Enter for default 'Administrator')
+      register: aws_role_name_prompt
+
+    - name: Set role name fact
+      ansible.builtin.set_fact:
+        aws_role_name: "{{ (aws_role_name_prompt.user_input | trim) if (aws_role_name_prompt.user_input | trim) != '' else 'Administrator' }}"
+
+    - name: Prompt for default AWS region
+      ansible.builtin.pause:
+        prompt: "Enter default AWS region (press Enter for 'us-east-1')"
+      register: aws_region_prompt
+
+    - name: Set region fact
+      ansible.builtin.set_fact:
+        aws_default_region: "{{ (aws_region_prompt.user_input | trim) if (aws_region_prompt.user_input | trim) != '' else 'us-east-1' }}"
+
+    - name: Add AWS profile to ~/.aws/config
+      ansible.builtin.blockinfile:
+        path: "{{ ansible_env.HOME }}/.aws/config"
+        create: yes
+        mode: '0600'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - AWS Profile {{ aws_profile_name }}"
+        block: |
+          [profile {{ aws_profile_name }}]
+          sso_session = vercara-sso
+          sso_account_id = {{ aws_account_id_prompt.user_input | trim }}
+          sso_role_name = {{ aws_role_name }}
+          region = {{ aws_default_region }}
+          output = json
+
+    - name: Export AWS_PROFILE in .zshrc.local
+      ansible.builtin.blockinfile:
+        path: '{{ ansible_env.HOME }}/.zshrc.local'
+        create: yes
+        mode: '0644'
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - AWS Profile"
+        block: |
+          # AWS SSO - active profile (change to switch accounts)
+          export AWS_PROFILE="{{ aws_profile_name }}"
+
+    - name: Initiate AWS SSO browser login
+      ansible.builtin.command:
+        cmd: aws sso login --sso-session vercara-sso
+      register: aws_sso_login
+      changed_when: true
+
+    - name: Display AWS SSO setup summary
+      ansible.builtin.debug:
+        msg: |
+          AWS SSO configured successfully!
+
+          Profile:    {{ aws_profile_name }}
+          Account ID: {{ aws_account_id_prompt.user_input | trim }}
+          Role:       {{ aws_role_name }}
+          Region:     {{ aws_default_region }}
+
+          Useful commands:
+            aws sts get-caller-identity   # Verify active credentials
+            aws sso login                 # Renew credentials when expired
+            AWS_PROFILE=<name> aws ...    # Use a specific profile for one command

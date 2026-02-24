@@ -201,6 +201,13 @@ elif command -v aws-mfa &> /dev/null; then
   alias aws-mfa='aws-mfa'
 fi
 
+# AWS SSO helpers
+if command -v aws &> /dev/null; then
+  alias aws-login='aws sso login'                    # Renew SSO credentials
+  alias aws-whoami='aws sts get-caller-identity'     # Show current account & role
+  alias aws-profiles='aws configure list-profiles'   # List configured profiles
+fi
+
 # ============================================
 # Fun
 # ============================================

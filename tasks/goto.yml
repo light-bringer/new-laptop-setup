@@ -47,27 +47,39 @@
 
           goto() {
             local input=$1
-            local user
-            local repo
+            local effective_domain="$GOTO_DOMAIN"
             local target_dir
             local git_url
+            # Expand leading ~ to $HOME so quoted paths work correctly in
+            # mkdir/git clone (the shell does not expand ~ inside double quotes)
+            local root="${GOTO_ROOT/#\~/$HOME}"
 
             if [[ -z "$input" ]]; then
-              echo "Usage: goto <project> OR goto <user>/<project>"
+              echo "Usage: goto [<user>/]<project>"
+              echo "       goto https://github.com/<user>/<project>"
+              echo "       goto https://gitlab.com/<user>/<project>"
+              echo "       goto git@github.com:<user>/<project>.git"
               echo "Current platform: $GOTO_PLATFORM ($GOTO_DOMAIN)"
               echo "Default user/org: $GOTO_DEFAULT_USER"
               return 1
             fi
 
-            if [[ "$input" == *"/"* ]]; then
-              user=${input%%/*}
-              repo=${input#*/}
-            else
-              user=$GOTO_DEFAULT_USER
-              repo=$input
+            # Handle full HTTPS URLs: https://github.com/user/repo[.git]
+            if [[ "$input" =~ ^https?://(github\.com|gitlab\.com)/(.+)$ ]]; then
+              effective_domain="${match[1]}"
+              input="${match[2]%.git}"
+            # Handle SSH URLs: git@github.com:user/repo[.git]
+            elif [[ "$input" =~ ^git@(github\.com|gitlab\.com):(.+)$ ]]; then
+              effective_domain="${match[1]}"
+              input="${match[2]%.git}"
             fi
 
-            target_dir="$GOTO_ROOT/$GOTO_DOMAIN/$user/$repo"
+            # If no slash, prepend the default user so all paths are user/repo[/subpath]
+            if [[ "$input" != *"/"* ]]; then
+              input="$GOTO_DEFAULT_USER/$input"
+            fi
+
+            target_dir="$root/$effective_domain/$input"
 
             if [[ -d "$target_dir" ]]; then
               echo "🚀 Jumping to existing directory: $target_dir"
@@ -78,7 +90,7 @@
             echo "📂 Directory not found. Preparing to clone..."
             mkdir -p "$(dirname "$target_dir")"
 
-            git_url="git@$GOTO_DOMAIN:$user/$repo.git"
+            git_url="git@${effective_domain}:${input}.git"
             echo "⬇️  Cloning $git_url..."
 
             if git clone "$git_url" "$target_dir"; then

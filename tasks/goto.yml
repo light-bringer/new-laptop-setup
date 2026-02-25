@@ -65,17 +65,21 @@
             fi
 
             # Handle full HTTPS URLs: https://github.com/user/repo[.git]
-            if [[ "$input" =~ ^https?://(github\.com|gitlab\.com)/(.+)$ ]]; then
-              effective_domain="${match[1]}"
-              input="${match[2]%.git}"
+            if [[ "$input" == https://* || "$input" == http://* ]]; then
+              local stripped="${input#*://}"        # strip protocol://
+              effective_domain="${stripped%%/*}"    # domain = up to first /
+              input="${stripped#*/}"                # path after domain
+              input="${input%.git}"                 # drop .git suffix
             # Handle SSH URLs: git@github.com:user/repo[.git]
-            elif [[ "$input" =~ ^git@(github\.com|gitlab\.com):(.+)$ ]]; then
-              effective_domain="${match[1]}"
-              input="${match[2]%.git}"
+            elif [[ "$input" == git@* ]]; then
+              local hostpart="${input#git@}"        # strip git@
+              effective_domain="${hostpart%%:*}"    # domain = up to colon
+              input="${hostpart#*:}"                # path after colon
+              input="${input%.git}"                 # drop .git suffix
             fi
 
-            # If no slash, prepend the default user so all paths are user/repo[/subpath]
-            if [[ "$input" != *"/"* ]]; then
+            # If no slash, prepend the default user
+            if [[ "$input" != */* ]]; then
               input="$GOTO_DEFAULT_USER/$input"
             fi
 

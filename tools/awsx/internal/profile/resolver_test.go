@@ -35,6 +35,22 @@ func TestResolverResolve(t *testing.T) {
 			},
 		},
 		{
+			name: "alias with no region inherits defaults",
+			resolver: NewResolver(&config.Config{
+				Profiles: map[string]config.ProfileAlias{
+					"prod": {AWSProfile: "ReadOnly-657536724158", AccountID: "657536724158", Region: ""},
+				},
+				Defaults: config.Defaults{Region: "us-east-1"},
+			}),
+			input: "prod",
+			want: ResolvedProfile{
+				AWSProfileName: "ReadOnly-657536724158",
+				AccountID:      "657536724158",
+				Region:         "us-east-1",
+				IsAlias:        true,
+			},
+		},
+		{
 			name:     "nil config",
 			resolver: NewResolver(nil),
 			input:    "anything",

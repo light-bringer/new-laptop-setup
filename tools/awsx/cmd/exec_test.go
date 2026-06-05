@@ -60,7 +60,7 @@ func TestExecArgParsing(t *testing.T) {
 }
 
 func TestExecEnvConstruction(t *testing.T) {
-	baseEnv := []string{"PATH=/usr/bin", "HOME=/Users/test"}
+	baseEnv := []string{"PATH=/usr/bin", "HOME=/Users/test", "AWS_ACCESS_KEY_ID=STALE_KEY", "AWS_DEFAULT_REGION=eu-west-1"}
 	creds := awsint.Credentials{
 		AccessKeyID:     "AKIA123",
 		SecretAccessKey: "secret123",
@@ -68,7 +68,7 @@ func TestExecEnvConstruction(t *testing.T) {
 		Region:          "us-west-2",
 	}
 
-	got := append(baseEnv, awsint.EnvVars(creds)...)
+	got := append(awsint.FilterAWSEnv(baseEnv), awsint.EnvVars(creds)...)
 	want := map[string]bool{
 		"AWS_ACCESS_KEY_ID=AKIA123":       false,
 		"AWS_SECRET_ACCESS_KEY=secret123": false,
@@ -85,6 +85,15 @@ func TestExecEnvConstruction(t *testing.T) {
 	for key, seen := range want {
 		if !seen {
 			t.Fatalf("missing env var %q in %v", key, got)
+		}
+	}
+
+	for _, e := range got {
+		if e == "AWS_ACCESS_KEY_ID=STALE_KEY" {
+			t.Fatal("stale AWS_ACCESS_KEY_ID survived FilterAWSEnv")
+		}
+		if e == "AWS_DEFAULT_REGION=eu-west-1" {
+			t.Fatal("stale AWS_DEFAULT_REGION survived FilterAWSEnv")
 		}
 	}
 }

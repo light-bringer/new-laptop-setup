@@ -15,6 +15,17 @@ type Credentials struct {
 	Region          string
 }
 
+// awsEnvKeys is the set of AWS credential/region env var prefixes to strip
+// before injecting fresh credentials so stale values don't shadow the new ones.
+var awsEnvKeys = map[string]struct{}{
+	"AWS_ACCESS_KEY_ID":     {},
+	"AWS_SECRET_ACCESS_KEY": {},
+	"AWS_SESSION_TOKEN":     {},
+	"AWS_DEFAULT_REGION":    {},
+	"AWS_REGION":            {},
+	"AWS_PROFILE":           {},
+}
+
 func GetCredentials(ctx context.Context, profileName string, region string) (Credentials, error) {
 	opts := []func(*awsconfig.LoadOptions) error{
 		awsconfig.WithSharedConfigProfile(profileName),
@@ -51,6 +62,22 @@ func EnvVars(creds Credentials) []string {
 		"AWS_SESSION_TOKEN=" + creds.SessionToken,
 		"AWS_DEFAULT_REGION=" + creds.Region,
 	}
+}
+
+// FilterAWSEnv returns a copy of env with all AWS credential/region variables
+// removed. Use this before appending fresh credentials from EnvVars().
+func FilterAWSEnv(env []string) []string {
+	out := make([]string, 0, len(env))
+	for _, e := range env {
+		key, _, _ := strings.Cut(e, "=")
+		if key == e && !strings.Contains(e, "=") {
+			key = e
+		}
+		if _, skip := awsEnvKeys[key]; !skip {
+			out = append(out, e)
+		}
+	}
+	return out
 }
 
 func ExportStatements(creds Credentials) string {

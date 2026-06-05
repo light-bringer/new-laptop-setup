@@ -67,6 +67,6 @@ func runExec(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("command not found: %s", cmdArgs[0])
 	}
 
-	env := append(os.Environ(), awsint.EnvVars(creds)...)
+	env := append(awsint.FilterAWSEnv(os.Environ()), awsint.EnvVars(creds)...)
 	return syscall.Exec(bin, cmdArgs, env)
 }

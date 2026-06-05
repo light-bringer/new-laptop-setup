@@ -45,6 +45,45 @@ func TestEnvVars_EmptySessionToken(t *testing.T) {
 	}
 }
 
+func TestFilterAWSEnv(t *testing.T) {
+	input := []string{
+		"PATH=/usr/bin",
+		"HOME=/Users/test",
+		"AWS_ACCESS_KEY_ID=OLD_KEY",
+		"AWS_SECRET_ACCESS_KEY=OLD_SECRET",
+		"AWS_SESSION_TOKEN=OLD_TOKEN",
+		"AWS_DEFAULT_REGION=us-west-2",
+		"AWS_REGION=us-west-2",
+		"AWS_PROFILE=default",
+		"GOPATH=/Users/test/go",
+	}
+
+	got := FilterAWSEnv(input)
+
+	kept := map[string]bool{"PATH=/usr/bin": false, "HOME=/Users/test": false, "GOPATH=/Users/test/go": false}
+	for _, e := range got {
+		if _, ok := kept[e]; ok {
+			kept[e] = true
+		}
+	}
+	for k, seen := range kept {
+		if !seen {
+			t.Errorf("FilterAWSEnv() dropped non-AWS var %q", k)
+		}
+	}
+
+	stripped := []string{"AWS_ACCESS_KEY_ID=OLD_KEY", "AWS_SECRET_ACCESS_KEY=OLD_SECRET",
+		"AWS_SESSION_TOKEN=OLD_TOKEN", "AWS_DEFAULT_REGION=us-west-2",
+		"AWS_REGION=us-west-2", "AWS_PROFILE=default"}
+	for _, e := range got {
+		for _, bad := range stripped {
+			if e == bad {
+				t.Errorf("FilterAWSEnv() kept AWS var %q", e)
+			}
+		}
+	}
+}
+
 func TestExportStatements(t *testing.T) {
 	creds := Credentials{
 		AccessKeyID:     "AKIA123",

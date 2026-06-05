@@ -27,10 +27,15 @@ func (r *Resolver) Resolve(name string) (ResolvedProfile, error) {
 		return ResolvedProfile{AWSProfileName: name}, nil
 	}
 
+	region := alias.Region
+	if region == "" {
+		region = r.cfg.Defaults.Region
+	}
+
 	return ResolvedProfile{
 		AWSProfileName: alias.AWSProfile,
 		AccountID:      alias.AccountID,
-		Region:         alias.Region,
+		Region:         region,
 		IsAlias:        true,
 	}, nil
 }

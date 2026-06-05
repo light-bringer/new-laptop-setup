@@ -1,0 +1,18 @@
+profiles:
+  nonprod:
+    aws_profile: AdministratorAccess-515216334008
+    account_id: "515216334008"
+    region: us-east-1
+    description: "AppSec Common NonProd - Admin"
+  nonprod-ro:
+    aws_profile: ReadOnly-515216334008
+    account_id: "515216334008"
+    region: us-east-1
+    description: "AppSec Common NonProd - ReadOnly"
+  prod:
+    aws_profile: ReadOnly-657536724158
+    account_id: "657536724158"
+    region: us-east-1
+    description: "AppSec Common Prod - ReadOnly"
+defaults:
+  region: us-east-1

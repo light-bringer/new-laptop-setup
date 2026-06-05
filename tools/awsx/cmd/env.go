@@ -22,13 +22,13 @@ func runEnv(cmd *cobra.Command, args []string) error {
 	resolved, err := resolver.Resolve(profile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		os.Exit(1)
+		return err
 	}
 
 	creds, err := awsint.GetCredentials(context.Background(), resolved.AWSProfileName, resolved.Region)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		os.Exit(1)
+		return err
 	}
 
 	fmt.Print(awsint.ExportStatements(creds))

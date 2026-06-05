@@ -7,12 +7,13 @@ import (
 
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
-	awsint "github.com/light-bringer/new-laptop-setup/tools/awsx/internal/aws"
 	"github.com/spf13/cobra"
 )
 
 func init() {
 	whoamiCmd.Args = cobra.MaximumNArgs(1)
+	whoamiCmd.SilenceErrors = true
+	whoamiCmd.SilenceUsage = true
 	whoamiCmd.RunE = runWhoami
 }
 
@@ -26,28 +27,41 @@ func runWhoami(cmd *cobra.Command, args []string) error {
 	case 0:
 		// default credential chain
 	case 1:
-		resolved, _ := resolver.Resolve(args[0])
+		resolved, err := resolver.Resolve(args[0])
+		if err != nil {
+			return fmt.Errorf("resolving profile: %w", err)
+		}
 		profileName = resolved.AWSProfileName
 		region = resolved.Region
 	default:
 		return fmt.Errorf("unexpected arguments")
 	}
 
-	if _, err := awsint.GetCredentials(ctx, profileName, region); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		return err
+	opts := []func(*awsconfig.LoadOptions) error{
+		awsconfig.WithSharedConfigProfile(profileName),
+	}
+	if region != "" {
+		opts = append(opts, awsconfig.WithRegion(region))
 	}
 
-	awscfg, err := awsconfig.LoadDefaultConfig(ctx, awsconfig.WithSharedConfigProfile(profileName))
+	awscfg, err := awsconfig.LoadDefaultConfig(ctx, opts...)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Credentials expired. Run: awsx login %s\n", profileName)
+		if profileName != "" {
+			fmt.Fprintf(os.Stderr, "Credentials expired or unavailable. Run: awsx login %s\n", profileName)
+		} else {
+			fmt.Fprintln(os.Stderr, "AWS credentials not available")
+		}
 		return err
 	}
 
 	stsClient := sts.NewFromConfig(awscfg)
 	result, err := stsClient.GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Credentials expired. Run: awsx login %s\n", profileName)
+		if profileName != "" {
+			fmt.Fprintf(os.Stderr, "Credentials expired or unavailable. Run: awsx login %s\n", profileName)
+		} else {
+			fmt.Fprintln(os.Stderr, "AWS credentials not available")
+		}
 		return err
 	}
 

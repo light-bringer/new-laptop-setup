@@ -39,6 +39,12 @@ func parseExecArgs(args []string) (profile string, cmdArgs []string, err error) 
 }
 
 func runExec(cmd *cobra.Command, args []string) error {
+	for _, arg := range args {
+		if arg == "--help" || arg == "-h" {
+			return cmd.Help()
+		}
+	}
+
 	profile, cmdArgs, err := parseExecArgs(args)
 	if err != nil {
 		fmt.Fprint(cmd.ErrOrStderr(), cmd.UsageString())

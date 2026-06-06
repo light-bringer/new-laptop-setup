@@ -22,6 +22,7 @@ Ansible-based automation for configuring macOS developer environments. This tool
 - 🐍 **Python 3.12** with pip, pipx, and virtualenv
 - 🖥️ **GUI Applications** - Docker Desktop (default), VSCode, iTerm2, Chrome, Slack, Postman (optional)
 - 🤖 **AI CLI Tools** - Claude Code CLI, GitHub Copilot CLI (optional)
+- ☁️ **awsx** - AWS SSO profile switcher with exec, ECR, and CodeArtifact support (optional)
 - 🔄 **Update scripts** for easy maintenance (laptop.update, laptop.upgrade)
 
 ## Prerequisites
@@ -216,6 +217,9 @@ Some components are not installed by default and must be explicitly requested:
 # Install GitHub Copilot CLI
 ./bin/laptop.run --tags github-copilot
 
+# Install awsx AWS profile switcher
+./bin/laptop.run --tags awsx
+
 # Install optional GUI applications (VSCode, Chrome, Slack, etc.)
 ./bin/laptop.run --tags gui-optional
 
@@ -298,6 +302,7 @@ Run only specific components using Ansible tags:
 **Optional (not installed by default)**:
 - `claude-code` / `claude` - Claude Code CLI
 - `github-copilot` / `copilot` - GitHub Copilot CLI
+- `awsx` - AWS SSO profile switcher CLI
 - `gui-optional` - All optional GUI apps (VSCode, IntelliJ IDEA, Chrome, Slack, etc.)
 - Individual apps: `vscode`, `intellij` / `idea`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
 
@@ -365,6 +370,43 @@ goto
 goto backend-api          # Clones vercara/backend-api if needed, then cd's into it
 goto teamname/frontend    # Clones teamname/frontend if needed, then cd's into it
 ```
+
+## awsx — AWS Profile Switcher
+
+`awsx` is a productivity CLI for developers working across multiple AWS accounts via IAM Identity Center (SSO). It handles profile synchronization, credential injection, and common developer tasks like ECR login.
+
+### First-time Setup
+
+1. **Install**: `./bin/laptop.run --tags awsx`
+2. **Sync profiles**: `awsx sync`
+   - This opens your browser for SSO login
+   - Automatically enumerates all accounts and roles you have access to
+   - Generates `~/.aws/config` profiles and `~/.awsx.yaml` aliases
+
+### Daily Usage
+
+| Command | Description |
+|---------|-------------|
+| `awsx login <profile>` | Log in to a specific profile |
+| `awsx whoami` | Show current AWS identity via STS |
+| `awsx exec <profile> -- <cmd>` | Run a command with injected credentials |
+| `awsx env <profile>` | Print export statements for shell eval |
+| `awsx list` | List all configured aliases and profiles |
+| `awsx ecr-login <profile>` | Authenticate Docker with ECR |
+| `awsx codeartifact <profile>` | Get CodeArtifact authorization token |
+
+### Profile Aliases
+
+You can define short aliases for long AWS profile names in `~/.awsx.yaml`. A sample is provided in `dotfiles/.awsx.yaml.example`.
+
+### Shell Aliases
+
+The setup adds these shortcuts to your shell:
+- `ax` — `awsx`
+- `axe` — `awsx exec`
+- `axl` — `awsx login`
+- `axw` — `awsx whoami`
+- `axenv` — Helper to eval `awsx env` into your current shell
 
 ## Dotfiles
 
@@ -457,7 +499,8 @@ new-laptop-setup/
 │   ├── python.yml           # Python with pip, pipx, and virtualenv
 │   ├── applications.yml     # GUI applications (Docker, VSCode, etc.)
 │   ├── claude-code.yml      # Claude Code CLI (optional)
-│   └── github-copilot.yml   # GitHub Copilot CLI (optional)
+│   ├── github-copilot.yml   # GitHub Copilot CLI (optional)
+│   └── awsx.yml             # awsx CLI build and install (optional)
 ├── dotfiles/                 # Comprehensive dotfiles
 │   ├── .aliases             # Shell aliases (git, docker, k8s, terraform, etc.)
 │   ├── .functions           # Custom shell functions

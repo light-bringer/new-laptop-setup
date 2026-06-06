@@ -59,6 +59,7 @@ These scripts are located in `bin/` and added to PATH via `~/.zshenv` after the 
 # Install optional components (not installed by default)
 ./bin/laptop.run --tags claude-code      # Install Claude Code CLI
 ./bin/laptop.run --tags github-copilot   # Install GitHub Copilot CLI
+./bin/laptop.run --tags awsx             # Install awsx AWS profile switcher
 ./bin/laptop.run --tags aws-sso          # Configure AWS SSO
 
 # Preview changes without applying
@@ -106,6 +107,7 @@ ansible-playbook main.yml --syntax-check
   - **pnpm.yml**: pnpm package manager installation
   - **python.yml**: Python with pip, pipx, and virtualenv
   - **applications.yml**: GUI applications via Homebrew Cask (Docker, VSCode, etc.)
+  - **awsx.yml**: awsx CLI build and install (optional)
   - **claude-code.yml**: Claude Code CLI installation (optional)
   - **github-copilot.yml**: GitHub Copilot CLI installation via gh extension (optional)
   - **aws-sso.yml**: AWS SSO configuration for Vercara (optional)
@@ -140,6 +142,7 @@ Defined in `main.yml`:
 17. **tasks/applications.yml**: Install GUI applications via Homebrew Cask
 
 **Optional Components** (not installed by default, use `--tags` to enable):
+- **tasks/awsx.yml**: Build awsx from source, install to bin/, copy sample config
 - **tasks/claude-code.yml**: Install Claude Code CLI via npm
 - **tasks/github-copilot.yml**: Install GitHub Copilot CLI via gh extension
 - **tasks/aws-sso.yml**: Configure AWS SSO for Vercara (prompts for account ID, role, profile name)
@@ -347,6 +350,31 @@ Claude Code CLI provides access to Claude AI in the terminal.
 claude auth  # Authenticate with Anthropic
 claude       # Start interactive session
 ```
+
+## awsx CLI
+
+`awsx` is a productivity CLI for working with AWS SSO profiles.
+
+**Installation:**
+```bash
+./bin/laptop.run --tags awsx
+```
+
+**First-time Setup:**
+- Run `awsx sync` to log in via browser and generate all profiles automatically.
+
+**Key Commands:**
+- `awsx sso-list`: List available SSO accounts/roles
+- `awsx sync`: Sync SSO profiles to `~/.aws/config`
+- `awsx login <profile>`: Log in to a profile
+- `awsx whoami`: Show current active identity
+- `awsx exec <profile> -- <command>`: Run command with temporary creds
+- `awsx ecr-login <profile>`: Docker login for ECR
+
+**Profile Aliases:**
+Configured in `~/.awsx.yaml` (see `dotfiles/.awsx.yaml.example`).
+
+**Source Location:** `tools/awsx/`
 
 ## Important Notes
 

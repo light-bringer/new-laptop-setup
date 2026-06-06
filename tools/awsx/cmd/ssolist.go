@@ -18,7 +18,11 @@ func init() {
 }
 
 func runSSOList(cmd *cobra.Command, args []string) error {
-	awsConfigPath := filepath.Join(os.Getenv("HOME"), ".aws", "config")
+	home, err := os.UserHomeDir()
+	if err != nil || home == "" {
+		home = os.Getenv("HOME")
+	}
+	awsConfigPath := filepath.Join(home, ".aws", "config")
 
 	session, err := ssopkg.FindSession(awsConfigPath)
 	if err != nil {
@@ -67,7 +71,7 @@ func ssoLogin(sessionName string) error {
 
 	if err := c.Run(); err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
-			os.Exit(exitErr.ExitCode())
+			return fmt.Errorf("aws sso login exited with code %d", exitErr.ExitCode())
 		}
 		return err
 	}

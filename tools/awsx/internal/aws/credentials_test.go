@@ -73,9 +73,11 @@ func TestFilterAWSEnv(t *testing.T) {
 		}
 	}
 
-	stripped := []string{"AWS_ACCESS_KEY_ID=OLD_KEY", "AWS_SECRET_ACCESS_KEY=OLD_SECRET",
+	stripped := []string{
+		"AWS_ACCESS_KEY_ID=OLD_KEY", "AWS_SECRET_ACCESS_KEY=OLD_SECRET",
 		"AWS_SESSION_TOKEN=OLD_TOKEN", "AWS_DEFAULT_REGION=us-west-2",
-		"AWS_REGION=us-west-2", "AWS_PROFILE=default"}
+		"AWS_REGION=us-west-2", "AWS_PROFILE=default",
+	}
 	for _, e := range got {
 		for _, bad := range stripped {
 			if e == bad {

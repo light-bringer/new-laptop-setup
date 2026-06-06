@@ -131,7 +131,7 @@ output = json
 		existingContent = removeExistingManagedBlocks(existingContent, pairs)
 	}
 
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o644)
 	if err != nil {
 		return 0, fmt.Errorf("opening %s: %w", path, err)
 	}
@@ -205,7 +205,7 @@ func syncAWSXConfig(path string, pairs []ssopkg.AccountRole) (int, error) {
 		return 0, fmt.Errorf("marshalling config: %w", err)
 	}
 
-	if err := os.WriteFile(path, out, 0644); err != nil {
+	if err := os.WriteFile(path, out, 0o644); err != nil {
 		return 0, fmt.Errorf("writing %s: %w", path, err)
 	}
 

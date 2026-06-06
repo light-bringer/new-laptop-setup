@@ -16,8 +16,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "awsx",
-	Short: "AWS profile switcher with exec, ECR, and CodeArtifact support",
+	Use:     "awsx",
+	Short:   "AWS profile switcher with exec, ECR, and CodeArtifact support",
 	Version: "0.1.0",
 }
 

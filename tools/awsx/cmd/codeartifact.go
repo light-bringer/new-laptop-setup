@@ -53,7 +53,8 @@ func runCodeArtifact(cmd *cobra.Command, args []string) error {
 	}
 
 	ctx := context.Background()
-	awscfg, err := awsconfig.LoadDefaultConfig(ctx,
+	awscfg, err := awsconfig.LoadDefaultConfig(
+		ctx,
 		awsconfig.WithSharedConfigProfile(resolved.AWSProfileName),
 		awsconfig.WithRegion(region),
 	)

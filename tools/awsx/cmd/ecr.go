@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"os"
 	"os/exec"
 	"strings"
+
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
@@ -39,7 +40,8 @@ func runECRLogin(cmd *cobra.Command, args []string) error {
 	}
 
 	ctx := context.Background()
-	awscfg, err := awsconfig.LoadDefaultConfig(ctx,
+	awscfg, err := awsconfig.LoadDefaultConfig(
+		ctx,
 		awsconfig.WithSharedConfigProfile(resolved.AWSProfileName),
 		awsconfig.WithRegion(region),
 	)

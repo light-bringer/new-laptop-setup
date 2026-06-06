@@ -8,11 +8,11 @@ import (
 
 func TestResolverResolve(t *testing.T) {
 	tests := []struct {
-		name       string
-		resolver   *Resolver
-		input      string
-		want       ResolvedProfile
-		wantErr    bool
+		name     string
+		resolver *Resolver
+		input    string
+		want     ResolvedProfile
+		wantErr  bool
 	}{
 		{
 			name:     "known alias resolves",

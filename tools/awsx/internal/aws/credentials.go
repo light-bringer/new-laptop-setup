@@ -61,6 +61,7 @@ func EnvVars(creds Credentials) []string {
 		"AWS_SECRET_ACCESS_KEY=" + creds.SecretAccessKey,
 		"AWS_SESSION_TOKEN=" + creds.SessionToken,
 		"AWS_DEFAULT_REGION=" + creds.Region,
+		"AWS_REGION=" + creds.Region,
 	}
 }
 
@@ -83,6 +84,7 @@ func ExportStatements(creds Credentials) string {
 		"export AWS_SECRET_ACCESS_KEY=" + creds.SecretAccessKey,
 		"export AWS_SESSION_TOKEN=" + creds.SessionToken,
 		"export AWS_DEFAULT_REGION=" + creds.Region,
+		"export AWS_REGION=" + creds.Region,
 		"",
 	}, "\n")
 }

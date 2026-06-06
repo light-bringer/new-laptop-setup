@@ -19,6 +19,7 @@ func TestEnvVars(t *testing.T) {
 		"AWS_SECRET_ACCESS_KEY=secret123",
 		"AWS_SESSION_TOKEN=token123",
 		"AWS_DEFAULT_REGION=us-west-2",
+		"AWS_REGION=us-west-2",
 	}
 
 	if len(got) != len(want) {

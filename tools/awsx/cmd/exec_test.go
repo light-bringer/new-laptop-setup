@@ -80,6 +80,7 @@ func TestExecEnvConstruction(t *testing.T) {
 		"AWS_SECRET_ACCESS_KEY=secret123": false,
 		"AWS_SESSION_TOKEN=token123":      false,
 		"AWS_DEFAULT_REGION=us-west-2":    false,
+		"AWS_REGION=us-west-2":            false,
 	}
 
 	for _, env := range got {

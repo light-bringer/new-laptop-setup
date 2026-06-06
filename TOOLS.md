@@ -82,7 +82,7 @@ Install with: `./bin/laptop.run --tags gui-optional` or individual tags like `--
 
 ### Cloud Platforms
 - **awscli** - Amazon Web Services CLI
-- **aws-vault** - Secure AWS credential storage (optional)
+- **awsx** - AWS SSO profile switcher (exec, ECR, CodeArtifact) — optional, install with `--tags awsx`
 
 ### Database CLIs
 - **postgresql@16** - PostgreSQL client tools
@@ -228,6 +228,32 @@ claude       # Start interactive session
 
 **Configuration**: `~/.claude`
 
+### awsx
+**NOT installed by default** - Must be explicitly requested
+
+AWS SSO profile switcher for developers working across multiple accounts.
+
+**Installation**:
+```bash
+./bin/laptop.run --tags awsx
+```
+
+**Commands**:
+| Command | Description |
+|---------|-------------|
+| `awsx sync` | One-shot setup: login → enumerate → generate profiles |
+| `awsx login` | Log in to an SSO profile |
+| `awsx exec` | Run commands with temporary SSO credentials |
+| `awsx whoami` | Show current active identity |
+| `awsx ecr-login` | Docker login for ECR repositories |
+
+**Shell Aliases**:
+- `ax` — `awsx`
+- `axe` — `awsx exec`
+- `axl` — `awsx login`
+- `axw` — `awsx whoami`
+- `axenv` — Eval `awsx env` for credential exports
+
 ## 📦 Package Managers
 
 - **Homebrew** - macOS package manager
@@ -265,6 +291,7 @@ Located in `bin/` directory:
 - `nvm` / `node` / `nodejs` - NVM and Node.js
 - `pnpm` - pnpm package manager
 - `python` / `py` - Python setup
+- `awsx` - AWS SSO profile switcher
 - `applications` / `apps` / `gui` - GUI applications
 
 ### Individual Application Tags
@@ -289,7 +316,7 @@ Located in `bin/` directory:
 - **Package Managers**: 6 (brew, cask, npm, pnpm, pip, pipx)
 - **Dotfiles**: 4 (vim, tmux, gitignore, editorconfig)
 - **Platform Integrations**: 2 (GitHub, GitLab)
-- **Total Tags**: 21+
+- **Total Tags**: 22+
 
 ## 🚀 Usage Examples
 

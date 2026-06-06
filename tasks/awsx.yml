@@ -1,0 +1,26 @@
+---
+- name: Build and install awsx
+  block:
+    - name: Check Go is installed
+      ansible.builtin.command: which go
+      register: go_check
+      failed_when: go_check.rc != 0
+      changed_when: false
+
+    - name: Build awsx binary
+      ansible.builtin.command:
+        cmd: go build -o {{ playbook_dir }}/bin/awsx .
+        chdir: "{{ playbook_dir }}/tools/awsx"
+
+    - name: Verify awsx binary works
+      ansible.builtin.command: "{{ playbook_dir }}/bin/awsx --help"
+      register: awsx_help
+      changed_when: false
+
+    - name: Copy awsx sample config if not present
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/dotfiles/.awsx.yaml.example"
+        dest: "{{ ansible_env.HOME }}/.awsx.yaml"
+        force: no
+        mode: '0644'
+  tags: [never, awsx]

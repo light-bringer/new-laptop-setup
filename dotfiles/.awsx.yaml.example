@@ -1,0 +1,30 @@
+# awsx profile aliases
+# Copy to ~/.awsx.yaml and customize
+#
+# Usage:
+#   awsx exec nonprod -- aws s3 ls
+#   awsx ecr-login prod
+#   eval "$(awsx env nonprod)"
+#
+# Profile names must match profiles in ~/.aws/config
+# Set up profiles with: aws configure sso
+
+profiles:
+  nonprod:
+    aws_profile: AdministratorAccess-515216334008
+    account_id: "515216334008"
+    region: us-east-1
+    description: "AppSec Common NonProd - Admin"
+  nonprod-ro:
+    aws_profile: ReadOnly-515216334008
+    account_id: "515216334008"
+    region: us-east-1
+    description: "AppSec Common NonProd - ReadOnly"
+  prod:
+    aws_profile: ReadOnly-657536724158
+    account_id: "657536724158"
+    region: us-east-1
+    description: "AppSec Common Prod - ReadOnly"
+
+defaults:
+  region: us-east-1

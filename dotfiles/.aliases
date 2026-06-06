@@ -208,6 +208,15 @@ if command -v aws &> /dev/null; then
   alias aws-profiles='aws configure list-profiles'   # List configured profiles
 fi
 
+# awsx - AWS profile switcher
+if command -v awsx &> /dev/null; then
+  alias ax='awsx'
+  alias axe='awsx exec'
+  alias axl='awsx login'
+  alias axw='awsx whoami'
+  axenv() { eval "$(awsx env "$1")"; }
+fi
+
 # ============================================
 # Fun
 # ============================================

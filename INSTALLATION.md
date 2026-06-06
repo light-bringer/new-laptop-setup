@@ -122,6 +122,11 @@ Install with: `./bin/laptop.run --tags gui-optional` or individual tags
   - Requires: Node.js (installed via NVM)
   - Setup: Run `claude auth` after installation
 
+- **awsx** — AWS SSO profile switcher
+  - Install with: `./bin/laptop.run --tags awsx`
+  - First-time setup: `awsx sync` (browser login → writes all profiles automatically)
+  - Requires: awscli (installed via dev-tools)
+
 ### Required User Input
 
 During the setup, you'll be prompted for:
@@ -184,6 +189,7 @@ Run only specific components:
 - `nvm` / `node` / `nodejs` - NVM and Node.js
 - `pnpm` - pnpm package manager
 - `python` / `py` - Python with pip, pipx, and virtualenv
+- `awsx` - AWS SSO profile switcher
 - `applications` / `apps` / `gui` - GUI applications
 - Individual apps: `docker`, `vscode`, `iterm2`, `chrome`, `firefox`, `slack`, `postman`, `notion`, `tableplus`, `figma`, `insomnia`, `rectangle`
 

@@ -90,3 +90,7 @@
     - name: Configure AWS SSO (optional - not configured by default)
       import_tasks: tasks/aws-sso.yml
       tags: [never, aws, aws-sso]
+
+    - name: Install awsx CLI tool (optional)
+      import_tasks: tasks/awsx.yml
+      tags: [never, awsx]

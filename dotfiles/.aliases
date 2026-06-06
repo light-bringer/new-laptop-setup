@@ -1,21 +1,15 @@
 # Shell Aliases for Development
-
-# ============================================
-# Navigation
-# ============================================
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 
-# ============================================
 # List files
-# ============================================
-alias ls='ls -G'  # Colorize output
-alias ll='ls -lah'  # Long format, all files, human-readable sizes
-alias la='ls -A'  # All files except . and ..
-alias l='ls -CF'  # Columns, file type indicators
-alias lsd='ls -l | grep "^d"'  # List only directories
+alias ls='ls -G'
+alias ll='ls -lah'
+alias la='ls -A'
+alias l='ls -CF'
+alias lsd='ls -l | grep "^d"'
 
 # Use eza if available (better ls)
 if command -v eza &> /dev/null; then
@@ -26,9 +20,7 @@ if command -v eza &> /dev/null; then
   alias lsd='eza -D'
 fi
 
-# ============================================
 # Git Shortcuts
-# ============================================
 alias g='git'
 alias gs='git status'
 alias ga='git add'
@@ -61,9 +53,7 @@ alias grbi='git rebase -i'
 alias grbc='git rebase --continue'
 alias grba='git rebase --abort'
 
-# ============================================
 # Docker Shortcuts
-# ============================================
 alias d='docker'
 alias dc='docker-compose'
 alias dps='docker ps'
@@ -76,9 +66,7 @@ alias dlog='docker logs -f'
 alias dstop='docker stop $(docker ps -q)'
 alias dclean='docker system prune -af'
 
-# ============================================
 # Kubernetes Shortcuts
-# ============================================
 alias k='kubectl'
 alias kgp='kubectl get pods'
 alias kgs='kubectl get services'
@@ -92,9 +80,7 @@ alias kex='kubectl exec -it'
 alias kctx='kubectl config get-contexts'
 alias kns='kubectl config set-context --current --namespace'
 
-# ============================================
 # Terraform Shortcuts
-# ============================================
 alias tf='terraform'
 alias tfi='terraform init'
 alias tfp='terraform plan'
@@ -103,9 +89,7 @@ alias tfd='terraform destroy'
 alias tfv='terraform validate'
 alias tff='terraform fmt'
 
-# ============================================
 # NPM/Node Shortcuts
-# ============================================
 alias ni='npm install'
 alias nid='npm install --save-dev'
 alias nig='npm install -g'
@@ -115,23 +99,18 @@ alias nt='npm test'
 alias nrb='npm run build'
 alias nrd='npm run dev'
 
-# pnpm shortcuts
 alias pi='pnpm install'
 alias pa='pnpm add'
 alias pr='pnpm run'
 alias pt='pnpm test'
 
-# ============================================
 # Python Shortcuts
-# ============================================
 alias py='python3'
 alias pip='pip3'
 alias venv='python3 -m venv'
 alias activate='source venv/bin/activate'
 
-# ============================================
 # System Shortcuts
-# ============================================
 alias c='clear'
 alias h='history'
 alias j='jobs -l'
@@ -139,59 +118,43 @@ alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%T"'
 alias ports='netstat -tulanp'
 
-# ============================================
 # Safety Aliases
-# ============================================
-alias rm='rm -i'  # Confirm before removing
-alias cp='cp -i'  # Confirm before overwriting
-alias mv='mv -i'  # Confirm before overwriting
-alias mkdir='mkdir -pv'  # Create parent dirs, verbose
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias mkdir='mkdir -pv'
 
-# ============================================
 # Networking
-# ============================================
 alias myip='curl -s https://api.ipify.org && echo'
 alias localip='ipconfig getifaddr en0'
 alias ips='ifconfig -a | grep -o "inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)" | awk "{ sub(/inet6? (addr:)? ?/, \"\"); print }"'
 alias ping='ping -c 5'
 alias fastping='ping -c 100 -i.2'
 
-# ============================================
 # Process Management
-# ============================================
 alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
 alias topcpu='ps aux | sort -rk 3,3 | head -n 10'
 alias topmem='ps aux | sort -rk 4,4 | head -n 10'
 
-# ============================================
 # Development Servers
-# ============================================
 alias serve='python3 -m http.server 8000'
 alias phpserve='php -S localhost:8000'
 
-# ============================================
 # File Finding
-# ============================================
 alias ff='find . -type f -name'
 alias fd='find . -type d -name'
 
-# ============================================
 # Archive Operations
-# ============================================
 alias untar='tar -xvf'
 alias targz='tar -czvf'
 
-# ============================================
 # Misc Utilities
-# ============================================
 alias week='date +%V'
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
 alias update='brew update && brew upgrade && brew cleanup'
 alias cleanup='find . -type f -name "*.DS_Store" -ls -delete'
 
-# ============================================
 # AWS & Cloud Tools
-# ============================================
 # AWS MFA helper (adjust path based on your Python installation)
 if [ -f "$HOME/Library/Python/3.11/bin/aws-mfa" ]; then
   alias aws-mfa="$HOME/Library/Python/3.11/bin/aws-mfa"
@@ -201,14 +164,12 @@ elif command -v aws-mfa &> /dev/null; then
   alias aws-mfa='aws-mfa'
 fi
 
-# AWS SSO helpers
 if command -v aws &> /dev/null; then
-  alias aws-login='aws sso login'                    # Renew SSO credentials
-  alias aws-whoami='aws sts get-caller-identity'     # Show current account & role
-  alias aws-profiles='aws configure list-profiles'   # List configured profiles
+  alias aws-login='aws sso login'
+  alias aws-whoami='aws sts get-caller-identity'
+  alias aws-profiles='aws configure list-profiles'
 fi
 
-# awsx - AWS profile switcher
 if command -v awsx &> /dev/null; then
   alias ax='awsx'
   alias axe='awsx exec'
@@ -217,8 +178,6 @@ if command -v awsx &> /dev/null; then
   axenv() { eval "$(awsx env "$1")"; }
 fi
 
-# ============================================
 # Fun
-# ============================================
 alias please='sudo'
 alias fucking='sudo'

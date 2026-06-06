@@ -166,8 +166,7 @@ func removeExistingManagedBlocks(content string, pairs []ssopkg.AccountRole) str
 	inBlock := false
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.HasPrefix(line, "# BEGIN ANSIBLE MANAGED BLOCK - AWS Profile ") {
-			profileName := strings.TrimPrefix(line, "# BEGIN ANSIBLE MANAGED BLOCK - AWS Profile ")
+		if profileName, ok := strings.CutPrefix(line, "# BEGIN ANSIBLE MANAGED BLOCK - AWS Profile "); ok {
 			for _, p := range pairs {
 				if ssopkg.ProfileName(p.AccountName, p.RoleName) == profileName {
 					inBlock = true

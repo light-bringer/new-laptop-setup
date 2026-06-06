@@ -15,22 +15,18 @@ import (
 	awssso "github.com/aws/aws-sdk-go-v2/service/sso"
 )
 
-// Session holds the parsed SSO session block from ~/.aws/config.
 type Session struct {
 	Name     string
 	StartURL string
 	Region   string
 }
 
-// AccountRole is a single (account, role) pair returned by the SSO API.
 type AccountRole struct {
 	AccountID   string
 	AccountName string
 	RoleName    string
 }
 
-// FindSession reads awsConfigPath and returns the first [sso-session] block
-// that has both sso_start_url and sso_region configured.
 func FindSession(awsConfigPath string) (Session, error) {
 	return findSession(awsConfigPath, "")
 }
@@ -106,8 +102,6 @@ type tokenCache struct {
 	StartURL    string `json:"startUrl"`
 }
 
-// FindAccessToken reads ~/.aws/sso/cache/*.json and returns a valid
-// (non-expired) access token whose startUrl matches startURL.
 func FindAccessToken(startURL string) (string, error) {
 	cacheDir := filepath.Join(os.Getenv("HOME"), ".aws", "sso", "cache")
 	entries, err := os.ReadDir(cacheDir)
@@ -155,8 +149,6 @@ func FindAccessToken(startURL string) (string, error) {
 	return "", fmt.Errorf("no valid SSO token found for %s", startURL)
 }
 
-// ListAccountRoles enumerates all (account, role) pairs accessible to the
-// current user by calling the SSO ListAccounts and ListAccountRoles APIs.
 func ListAccountRoles(ctx context.Context, accessToken string, session Session) ([]AccountRole, error) {
 	cfg := aws.Config{Region: session.Region}
 	client := awssso.NewFromConfig(cfg)
@@ -222,13 +214,8 @@ var accountShortSubs = map[string]string{
 	"testing":       "test",
 }
 
-// nonAlphaNum matches any character that is not an ASCII letter or digit.
 var nonAlphaNum = regexp.MustCompile(`[^a-z0-9]`)
 
-// ShortAccountName derives a short identifier from an AWS account name.
-//
-//	"Application Security - Common - NonProduction" → "nonprod"
-//	"Application Security - Common - Production"    → "prod"
 func ShortAccountName(accountName string) string {
 	segment := accountName
 	if idx := strings.LastIndex(accountName, " - "); idx >= 0 {
@@ -248,14 +235,8 @@ var roleShortSubs = map[string]string{
 	"readonlyaccess":      "ro",
 }
 
-// nonAlphaNumHyphen matches any character that is not an ASCII letter, digit, or hyphen.
 var nonAlphaNumHyphen = regexp.MustCompile(`[^a-z0-9-]`)
 
-// ShortRoleName derives a short identifier from an AWS role name.
-//
-//	"Administrator"       → "admin"
-//	"ReadOnly"            → "ro"
-//	"AdministratorAccess" → "admin"
 func ShortRoleName(roleName string) string {
 	lower := strings.ToLower(roleName)
 	if sub, ok := roleShortSubs[nonAlphaNum.ReplaceAllString(lower, "")]; ok {

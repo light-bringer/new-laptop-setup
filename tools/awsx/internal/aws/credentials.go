@@ -15,8 +15,6 @@ type Credentials struct {
 	Region          string
 }
 
-// awsEnvKeys is the set of AWS credential/region env var prefixes to strip
-// before injecting fresh credentials so stale values don't shadow the new ones.
 var awsEnvKeys = map[string]struct{}{
 	"AWS_ACCESS_KEY_ID":     {},
 	"AWS_SECRET_ACCESS_KEY": {},
@@ -65,8 +63,6 @@ func EnvVars(creds Credentials) []string {
 	}
 }
 
-// FilterAWSEnv returns a copy of env with all AWS credential/region variables
-// removed. Use this before appending fresh credentials from EnvVars().
 func FilterAWSEnv(env []string) []string {
 	out := make([]string, 0, len(env))
 	for _, e := range env {

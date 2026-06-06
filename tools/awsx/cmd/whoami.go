@@ -25,7 +25,6 @@ func runWhoami(cmd *cobra.Command, args []string) error {
 
 	switch len(args) {
 	case 0:
-		// default credential chain
 	case 1:
 		resolved, err := resolver.Resolve(args[0])
 		if err != nil {

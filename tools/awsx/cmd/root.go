@@ -11,6 +11,7 @@ import (
 
 var (
 	cfgFile  string
+	verbose  bool
 	cfg      *config.Config
 	resolver *profile.Resolver
 )
@@ -82,6 +83,10 @@ func persistentPreRunE(cmd *cobra.Command, args []string) error {
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default: ~/.awsx.yaml)")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "show detailed operation output")
+	if versionFlag := rootCmd.Flags().Lookup("version"); versionFlag != nil {
+		versionFlag.Shorthand = ""
+	}
 	rootCmd.PersistentPreRunE = persistentPreRunE
 	rootCmd.AddCommand(execCmd, loginCmd, envCmd, listCmd, whoamiCmd, ecrLoginCmd, codeartifactCmd, ssoListCmd, syncCmd)
 }

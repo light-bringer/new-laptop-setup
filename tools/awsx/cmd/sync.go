@@ -40,7 +40,10 @@ func runSync(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if syncSSOSession != "" {
-		session.Name = syncSSOSession
+		session, err = ssopkg.FindSessionByName(awsConfigPath, syncSSOSession)
+		if err != nil {
+			return fmt.Errorf("SSO session %q not found in ~/.aws/config: %w", syncSSOSession, err)
+		}
 	}
 
 	token, err := ssopkg.FindAccessToken(session.StartURL)
@@ -97,7 +100,9 @@ func syncAWSConfig(path string, pairs []ssopkg.AccountRole, sessionName, region 
 		alreadyExists := strings.Contains(existingContent, beginMarker)
 
 		if alreadyExists && !syncForce {
-			fmt.Printf("  skip   %s (already exists)\n", name)
+			if verbose {
+				fmt.Printf("  skip   %s (already exists)\n", name)
+			}
 			continue
 		}
 
@@ -115,7 +120,9 @@ output = json
 		if alreadyExists {
 			action = "update"
 		}
-		fmt.Printf("  %-6s %s → %s (%s %s)\n", action, name, name, p.AccountID, p.RoleName)
+		if verbose {
+			fmt.Printf("  %-6s %s → %s (%s %s)\n", action, name, name, p.AccountID, p.RoleName)
+		}
 
 		if !syncDryRun {
 			newBlocks.WriteString(block)
@@ -129,6 +136,15 @@ output = json
 
 	if syncForce {
 		existingContent = removeExistingManagedBlocks(existingContent, pairs)
+		content := existingContent
+		if !strings.HasSuffix(content, "\n") {
+			content += "\n"
+		}
+		content += newBlocks.String()
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			return 0, fmt.Errorf("writing %s: %w", path, err)
+		}
+		return added, nil
 	}
 
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o644)
@@ -183,9 +199,14 @@ func syncAWSXConfig(path string, pairs []ssopkg.AccountRole) (int, error) {
 	for _, p := range pairs {
 		name := ssopkg.ProfileName(p.AccountName, p.RoleName)
 		if _, exists := cfg.Profiles[name]; exists && !syncForce {
+			if verbose {
+				fmt.Printf("  skip   %s (already exists)\n", name)
+			}
 			continue
 		}
-		fmt.Printf("  add    %s → %s (%s %s)\n", name, name, p.AccountID, p.RoleName)
+		if verbose {
+			fmt.Printf("  add    %s → %s (%s %s)\n", name, name, p.AccountID, p.RoleName)
+		}
 		if !syncDryRun {
 			cfg.Profiles[name] = config.ProfileAlias{
 				AWSProfile:  name,

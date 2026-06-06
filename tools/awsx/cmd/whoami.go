@@ -48,9 +48,9 @@ func runWhoami(cmd *cobra.Command, args []string) error {
 	awscfg, err := awsconfig.LoadDefaultConfig(ctx, opts...)
 	if err != nil {
 		if profileName != "" {
-			fmt.Fprintf(os.Stderr, "Credentials expired or unavailable. Run: awsx login %s\n", profileName)
+			fmt.Fprintf(os.Stderr, "Error loading credentials for %q: %v\nRun: awsx login %s\n", profileName, err, profileName)
 		} else {
-			fmt.Fprintln(os.Stderr, "AWS credentials not available")
+			fmt.Fprintf(os.Stderr, "Error loading AWS credentials: %v\n", err)
 		}
 		return err
 	}
@@ -59,9 +59,9 @@ func runWhoami(cmd *cobra.Command, args []string) error {
 	result, err := stsClient.GetCallerIdentity(ctx, &sts.GetCallerIdentityInput{})
 	if err != nil {
 		if profileName != "" {
-			fmt.Fprintf(os.Stderr, "Credentials expired or unavailable. Run: awsx login %s\n", profileName)
+			fmt.Fprintf(os.Stderr, "Error calling STS for %q: %v\nRun: awsx login %s\n", profileName, err, profileName)
 		} else {
-			fmt.Fprintln(os.Stderr, "AWS credentials not available")
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		}
 		return err
 	}

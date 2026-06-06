@@ -32,6 +32,14 @@ type AccountRole struct {
 // FindSession reads awsConfigPath and returns the first [sso-session] block
 // that has both sso_start_url and sso_region configured.
 func FindSession(awsConfigPath string) (Session, error) {
+	return findSession(awsConfigPath, "")
+}
+
+func FindSessionByName(awsConfigPath, name string) (Session, error) {
+	return findSession(awsConfigPath, name)
+}
+
+func findSession(awsConfigPath, targetName string) (Session, error) {
 	f, err := os.Open(awsConfigPath)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -49,17 +57,16 @@ func FindSession(awsConfigPath string) (Session, error) {
 			continue
 		}
 
-		if strings.HasPrefix(line, "[sso-session ") && strings.HasSuffix(line, "]") {
-			if current != nil && current.StartURL != "" && current.Region != "" {
+		if sessionName, ok := strings.CutPrefix(line, "[sso-session "); ok && strings.HasSuffix(sessionName, "]") {
+			if current != nil && current.StartURL != "" && current.Region != "" && (targetName == "" || current.Name == targetName) {
 				return *current, nil
 			}
-			name := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(line, "[sso-session "), "]"))
-			current = &Session{Name: name}
+			current = &Session{Name: strings.TrimSpace(strings.TrimSuffix(sessionName, "]"))}
 			continue
 		}
 
 		if strings.HasPrefix(line, "[") {
-			if current != nil && current.StartURL != "" && current.Region != "" {
+			if current != nil && current.StartURL != "" && current.Region != "" && (targetName == "" || current.Name == targetName) {
 				return *current, nil
 			}
 			current = nil
@@ -86,7 +93,7 @@ func FindSession(awsConfigPath string) (Session, error) {
 		return Session{}, err
 	}
 
-	if current != nil && current.StartURL != "" && current.Region != "" {
+	if current != nil && current.StartURL != "" && current.Region != "" && (targetName == "" || current.Name == targetName) {
 		return *current, nil
 	}
 

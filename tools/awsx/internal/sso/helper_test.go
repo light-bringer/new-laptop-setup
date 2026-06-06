@@ -1,6 +1,8 @@
 package sso
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -76,5 +78,42 @@ func TestProfileName(t *testing.T) {
 				t.Errorf("ProfileName(%q, %q) = %q, want %q", tc.account, tc.role, got, tc.want)
 			}
 		})
+	}
+}
+
+func TestFindSessionByName(t *testing.T) {
+	config := `[profile default]
+region = us-west-2
+
+[sso-session first]
+sso_start_url = https://first.awsapps.com/start
+sso_region = us-east-1
+
+[sso-session target]
+sso_start_url = https://target.awsapps.com/start
+sso_region = us-west-2
+`
+
+	path := filepath.Join(t.TempDir(), "config")
+	if err := os.WriteFile(path, []byte(config), 0o644); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+
+	session, err := FindSessionByName(path, "target")
+	if err != nil {
+		t.Fatalf("FindSessionByName() error = %v", err)
+	}
+	if session.Name != "target" {
+		t.Fatalf("session.Name = %q, want %q", session.Name, "target")
+	}
+	if session.StartURL != "https://target.awsapps.com/start" {
+		t.Fatalf("session.StartURL = %q", session.StartURL)
+	}
+	if session.Region != "us-west-2" {
+		t.Fatalf("session.Region = %q, want %q", session.Region, "us-west-2")
+	}
+
+	if _, err := FindSessionByName(path, "missing"); err == nil {
+		t.Fatal("FindSessionByName() error = nil, want error")
 	}
 }

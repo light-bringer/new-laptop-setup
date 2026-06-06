@@ -69,6 +69,9 @@ func TestLoad(t *testing.T) {
 				if cfg == nil {
 					t.Fatal("Load() returned nil config")
 				}
+				if cfg.Profiles == nil {
+					t.Fatal("Load() returned nil Profiles map")
+				}
 				if len(cfg.Profiles) != 0 {
 					t.Fatalf("len(Profiles) = %d, want 0", len(cfg.Profiles))
 				}
@@ -94,6 +97,9 @@ func TestLoad(t *testing.T) {
 				}
 				if cfg == nil {
 					t.Fatal("Load() returned nil config")
+				}
+				if cfg.Profiles == nil {
+					t.Fatal("Load() returned nil Profiles map")
 				}
 				if len(cfg.Profiles) != 0 {
 					t.Fatalf("len(Profiles) = %d, want 0", len(cfg.Profiles))

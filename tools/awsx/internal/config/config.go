@@ -27,13 +27,13 @@ func Load(path string) (*Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return &Config{}, nil
+			return &Config{Profiles: map[string]ProfileAlias{}}, nil
 		}
 		return nil, err
 	}
 
 	if len(data) == 0 {
-		return &Config{}, nil
+		return &Config{Profiles: map[string]ProfileAlias{}}, nil
 	}
 
 	cfg := &Config{}

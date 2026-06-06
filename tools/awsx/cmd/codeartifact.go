@@ -25,7 +25,9 @@ func init() {
 	codeartifactCmd.Flags().StringVar(&caDomain, "domain", "", "CodeArtifact domain name (required)")
 	codeartifactCmd.Flags().StringVar(&caDomainOwner, "domain-owner", "", "Domain owner account ID (default: profile account_id)")
 	codeartifactCmd.Flags().StringVar(&caRegion, "region", "", "AWS region (default: profile region or us-east-1)")
-	_ = codeartifactCmd.MarkFlagRequired("domain")
+	if err := codeartifactCmd.MarkFlagRequired("domain"); err != nil {
+		panic(err)
+	}
 	codeartifactCmd.RunE = runCodeArtifact
 }
 

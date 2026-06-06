@@ -21,6 +21,12 @@ func TestExecArgParsing(t *testing.T) {
 			cmdArgs: []string{"echo", "hello"},
 		},
 		{
+			name:    "help flag after -- is not intercepted",
+			args:    []string{"dev", "--", "grep", "-h", "foo"},
+			profile: "dev",
+			cmdArgs: []string{"grep", "-h", "foo"},
+		},
+		{
 			name:      "missing separator errors",
 			args:      []string{"prod"},
 			wantError: true,

@@ -70,9 +70,6 @@ func FilterAWSEnv(env []string) []string {
 	out := make([]string, 0, len(env))
 	for _, e := range env {
 		key, _, _ := strings.Cut(e, "=")
-		if key == e && !strings.Contains(e, "=") {
-			key = e
-		}
 		if _, skip := awsEnvKeys[key]; !skip {
 			out = append(out, e)
 		}

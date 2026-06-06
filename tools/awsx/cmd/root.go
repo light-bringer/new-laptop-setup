@@ -56,6 +56,16 @@ var codeartifactCmd = &cobra.Command{
 	Short: "Get a CodeArtifact authorization token",
 }
 
+var ssoListCmd = &cobra.Command{
+	Use:   "sso-list",
+	Short: "List available SSO accounts and roles",
+}
+
+var syncCmd = &cobra.Command{
+	Use:   "sync",
+	Short: "Sync AWS SSO profiles to ~/.aws/config and aliases to ~/.awsx.yaml",
+}
+
 func persistentPreRunE(cmd *cobra.Command, args []string) error {
 	path := cfgFile
 	if path == "" {
@@ -73,7 +83,7 @@ func persistentPreRunE(cmd *cobra.Command, args []string) error {
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default: ~/.awsx.yaml)")
 	rootCmd.PersistentPreRunE = persistentPreRunE
-	rootCmd.AddCommand(execCmd, loginCmd, envCmd, listCmd, whoamiCmd, ecrLoginCmd, codeartifactCmd)
+	rootCmd.AddCommand(execCmd, loginCmd, envCmd, listCmd, whoamiCmd, ecrLoginCmd, codeartifactCmd, ssoListCmd, syncCmd)
 }
 
 func Execute() {

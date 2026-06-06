@@ -37,8 +37,9 @@ func runWhoami(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("unexpected arguments")
 	}
 
-	opts := []func(*awsconfig.LoadOptions) error{
-		awsconfig.WithSharedConfigProfile(profileName),
+	opts := []func(*awsconfig.LoadOptions) error{}
+	if profileName != "" {
+		opts = append(opts, awsconfig.WithSharedConfigProfile(profileName))
 	}
 	if region != "" {
 		opts = append(opts, awsconfig.WithRegion(region))

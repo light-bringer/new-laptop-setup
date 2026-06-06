@@ -33,6 +33,9 @@ func runLogin(cmd *cobra.Command, args []string) error {
 
 	if err := awsCmd.Run(); err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
+			// os.Exit is intentional here: Cobra's Execute() only exits with 1
+			// on any error, losing the original exit code from aws sso login.
+			// Preserving it matters for scripts that check $?.
 			os.Exit(exitErr.ExitCode())
 		}
 		return err

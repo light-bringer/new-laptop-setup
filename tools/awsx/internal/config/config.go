@@ -49,5 +49,9 @@ func Load(path string) (*Config, error) {
 }
 
 func DefaultPath() string {
-	return filepath.Join(os.Getenv("HOME"), ".awsx.yaml")
+	home, err := os.UserHomeDir()
+	if err != nil || home == "" {
+		home = os.Getenv("HOME")
+	}
+	return filepath.Join(home, ".awsx.yaml")
 }

@@ -42,7 +42,7 @@ func GetCredentials(ctx context.Context, profileName string, region string) (Cre
 	v, err := cfg.Credentials.Retrieve(ctx)
 	if err != nil {
 		if isExpiredSSOError(err) {
-			return Credentials{}, fmt.Errorf("credentials expired or unavailable for profile %q - run: awsx login %s\n%w", profileName, profileName, err)
+			return Credentials{}, fmt.Errorf("credentials expired or unavailable for profile %q - run: awsx login %s: %w", profileName, profileName, err)
 		}
 		return Credentials{}, err
 	}

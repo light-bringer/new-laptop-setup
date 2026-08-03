@@ -35,6 +35,15 @@ This setup works fine on a **standard (non-admin) macOS account** managed by an 
 - **Cask GUI apps** (Docker Desktop, VSCode, etc.) install to `/Applications` via Homebrew's own internal sudo escalation, the same as any other cask install.
 - **Command Line Tools (CLT)** must already be installed before running this setup. The automation deliberately fails fast instead of auto-invoking `xcode-select --install`, since that command opens a GUI prompt that would hang indefinitely on an unattended or MDM-managed machine. If CLT is missing, install it via your MDM's Self Service (or manually) first.
 
+#### First-run validation on real MDM machines
+
+The following behaviors are implemented and unit-tested with mocked sudo/system calls, but have NOT been validated against a real MDM-restricted machine. If you hit an issue during your first run, these are the most likely culprits:
+
+1. `sudo mkdir -p <prefix>` succeeding under your specific MDM policy
+2. Full Homebrew installer completion under MDM (chown/chgrp of the prefix, `/etc/paths.d` writes)
+3. Cask `/Applications` write via Homebrew's internal sudo escalation actually succeeding with the keep-alive credential
+4. Command Line Tools presence — if missing, you'll need to install via your MDM's Self Service catalog or `xcode-select --install` manually before running this setup
+
 ## For Developers
 
 ### Initial Setup

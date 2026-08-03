@@ -177,9 +177,11 @@
         src: '{{ playbook_dir }}/dotfiles/opencode/opencode.json'
         dest: '{{ ansible_env.HOME }}/.config/opencode/opencode.json'
         state: link
+        force: yes
 
     - name: Symlink oh-my-openagent.json
       ansible.builtin.file:
         src: '{{ playbook_dir }}/dotfiles/opencode/oh-my-openagent.json'
         dest: '{{ ansible_env.HOME }}/.config/opencode/oh-my-openagent.json'
         state: link
+        force: yes

@@ -1,4 +1,7 @@
 ---
+# Standard (non-admin) accounts:
+# Homebrew cask writes to /Applications via Homebrew's internal sudo escalation.
+# This requires the sudo keep-alive credential from bin/laptop.run to still be valid at install time.
 # Docker Desktop - Optional (not installed by default)
 # Note: Docker CLI plugins directory is pre-created by bin/laptop.run
 - name: Install Docker Desktop

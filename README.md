@@ -33,7 +33,7 @@ Before running the setup, ensure you have the following:
 
 - **macOS**: macOS 12 (Monterey) or later
 - **Architecture**: Apple Silicon (M1/M2/M3) or Intel
-- **Admin Access**: Sudo privileges required for installation
+- **Sudo Access**: Sudo access required (standard, non-admin accounts on MDM-managed machines are supported — see [Standard / MDM-managed accounts](#standard--mdm-managed-accounts))
 - **Internet Connection**: Required for downloading packages and dependencies
 - **Disk Space**: At least 5GB free for development tools and applications
 
@@ -67,6 +67,14 @@ You'll need to create these before starting the setup:
 - **API Key**: Anthropic API key
 - **Create at**: https://console.anthropic.com/
 
+### Standard / MDM-managed accounts
+
+This setup works fine on a **standard (non-admin) macOS account** managed by an MDM, as long as sudo access is available:
+
+- **Homebrew** installs to the default prefix using the official installer, which only requires sudo for a few directory-ownership steps — no admin-group membership is needed.
+- **Cask GUI apps** (Docker Desktop, VSCode, etc.) install to `/Applications` via Homebrew's own internal sudo escalation, the same as any other cask install.
+- **Command Line Tools (CLT)** must already be installed before running this setup. The automation deliberately fails fast instead of auto-invoking `xcode-select --install`, since that command opens a GUI prompt that would hang indefinitely on an unattended or MDM-managed machine. If CLT is missing, install it via your MDM's Self Service (or manually) first.
+
 ### Information to Prepare
 
 During setup, you'll be prompted for:
@@ -98,7 +106,7 @@ During setup, you'll be prompted for:
 ### Pre-Setup Checklist
 
 ✅ macOS 12+ installed
-✅ Admin/sudo access available
+✅ Sudo access available (standard, non-admin accounts on MDM-managed machines are supported)
 ✅ GitHub Personal Access Token created and saved
 ✅ GitLab Personal Access Token created and saved
 ✅ GitHub username and email ready

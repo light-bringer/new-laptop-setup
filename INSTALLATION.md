@@ -23,6 +23,18 @@ After the initial setup, you can update your configuration anytime:
 laptop.upgrade
 ```
 
+## Prerequisites
+
+- **Sudo Access**: Sudo access required (standard, non-admin accounts on MDM-managed machines are supported — see below)
+
+### Standard / MDM-managed accounts
+
+This setup works fine on a **standard (non-admin) macOS account** managed by an MDM, as long as sudo access is available:
+
+- **Homebrew** installs to the default prefix using the official installer, which only requires sudo for a few directory-ownership steps — no admin-group membership is needed.
+- **Cask GUI apps** (Docker Desktop, VSCode, etc.) install to `/Applications` via Homebrew's own internal sudo escalation, the same as any other cask install.
+- **Command Line Tools (CLT)** must already be installed before running this setup. The automation deliberately fails fast instead of auto-invoking `xcode-select --install`, since that command opens a GUI prompt that would hang indefinitely on an unattended or MDM-managed machine. If CLT is missing, install it via your MDM's Self Service (or manually) first.
+
 ## For Developers
 
 ### Initial Setup

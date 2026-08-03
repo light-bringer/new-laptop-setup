@@ -11,6 +11,12 @@
         state: directory
         mode: '0755'
 
+    - name: Create nested backup subdirectory for opencode configs
+      ansible.builtin.file:
+        path: '{{ ansible_env.HOME }}/.dotfiles-backup-{{ backup_timestamp }}/.config/opencode'
+        state: directory
+        mode: '0755'
+
     - name: Backup existing dotfiles
       ansible.builtin.copy:
         src: '{{ ansible_env.HOME }}/{{ item }}'
@@ -27,6 +33,8 @@
         - .terraformrc
         - .zshrc
         - .gitconfig
+        - .config/opencode/opencode.json
+        - .config/opencode/oh-my-openagent.json
       ignore_errors: yes
       register: backup_result
 
@@ -38,6 +46,12 @@
     - name: Create .config directory
       ansible.builtin.file:
         path: '{{ ansible_env.HOME }}/.config'
+        state: directory
+        mode: '0755'
+
+    - name: Create .config/opencode directory
+      ansible.builtin.file:
+        path: '{{ ansible_env.HOME }}/.config/opencode'
         state: directory
         mode: '0755'
 
@@ -154,3 +168,18 @@
         path: '{{ ansible_env.HOME }}/.terraform.d/plugin-cache'
         state: directory
         mode: '0755'
+
+    # ============================================
+    # OpenCode Configurations
+    # ============================================
+    - name: Symlink opencode.json
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/opencode/opencode.json'
+        dest: '{{ ansible_env.HOME }}/.config/opencode/opencode.json'
+        state: link
+
+    - name: Symlink oh-my-openagent.json
+      ansible.builtin.file:
+        src: '{{ playbook_dir }}/dotfiles/opencode/oh-my-openagent.json'
+        dest: '{{ ansible_env.HOME }}/.config/opencode/oh-my-openagent.json'
+        state: link

@@ -75,8 +75,8 @@ ensure_sudo_available() {
     if [[ ${rc} -ne 0 ]]; then
       echo >&2 "sudo -v failed (exit ${rc}). Possible causes: (a) this account does not have sudo access at all - contact your MDM administrator to grant sudo rights; (b) no interactive terminal is available for the password prompt - try running this directly in Terminal.app or iTerm rather than through another wrapper; (c) an incorrect password was entered."
 
-      local detected_pam_tool
-      detected_pam_tool="$(detect_sudo_pam_interception)"
+      local detected_pam_tool=""
+      detected_pam_tool="$(detect_sudo_pam_interception)" || true
       if [[ -n "${detected_pam_tool}" ]]; then
         echo >&2 "Detected: ${detected_pam_tool} is intercepting sudo on this machine (found in /etc/pam.d/sudo)."
         echo >&2 "This is a third-party security policy layer separate from standard sudoers. Your"

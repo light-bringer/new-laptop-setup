@@ -131,6 +131,33 @@ preflight_capability_check() {
   return 1
 }
 
+# detect_sudo_pam_interception [pam_sudo_path]
+#   Read-only inspection of the sudo PAM config (default: /etc/pam.d/sudo,
+#   world-readable on stock macOS, no sudo required) for known signatures of
+#   third-party sudo-gatekeeping PAM modules (e.g. enterprise PAM/MDM security
+#   tooling that intercepts sudo independently of standard sudoers). An
+#   optional path argument is accepted so tests can point this at a temp file
+#   instead of the real system file.
+#   Echoes the detected tool name and returns 0 on match; returns 1 (no
+#   output) if the file is missing/unreadable or no signature matches.
+detect_sudo_pam_interception() {
+  local pam_sudo_path="${1:-/etc/pam.d/sudo}"
+
+  [[ -r "${pam_sudo_path}" ]] || return 1
+
+  if grep -q 'CyberArkEPMPAM' "${pam_sudo_path}" 2>/dev/null; then
+    echo "CyberArk EPM"
+    return 0
+  fi
+
+  if grep -qE 'auth[[:space:]]+sufficient[[:space:]]+/private/cyberark/' "${pam_sudo_path}" 2>/dev/null; then
+    echo "CyberArk EPM"
+    return 0
+  fi
+
+  return 1
+}
+
 # guarded_system_chmod <mode> <path> [path...]
 #   Only runs `sudo chmod` when the current permissions differ from the
 #   requested mode. Missing paths are warned about and skipped (non-fatal).

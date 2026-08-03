@@ -74,6 +74,18 @@ ensure_sudo_available() {
     sudo -v || rc=$?
     if [[ ${rc} -ne 0 ]]; then
       echo >&2 "sudo -v failed (exit ${rc}). Possible causes: (a) this account does not have sudo access at all - contact your MDM administrator to grant sudo rights; (b) no interactive terminal is available for the password prompt - try running this directly in Terminal.app or iTerm rather than through another wrapper; (c) an incorrect password was entered."
+
+      local detected_pam_tool
+      detected_pam_tool="$(detect_sudo_pam_interception)"
+      if [[ -n "${detected_pam_tool}" ]]; then
+        echo >&2 "Detected: ${detected_pam_tool} is intercepting sudo on this machine (found in /etc/pam.d/sudo)."
+        echo >&2 "This is a third-party security policy layer separate from standard sudoers. Your"
+        echo >&2 "organization's security/IT team needs to update the ${detected_pam_tool} policy to authorize"
+        echo >&2 "sudo for this account (scoped to mkdir/chown/chgrp/installer at minimum for Homebrew,"
+        echo >&2 "or broader temporary elevation for the install). This is NOT something this script"
+        echo >&2 "can resolve - it requires a policy change on the security tool's management console."
+      fi
+
       exit "${rc}"
     fi
   fi

@@ -7,6 +7,9 @@ set -eo pipefail
 : "${LAPTOP_SETUP_DIR:="$HOME/dev/new-laptop-setup"}"
 export LAPTOP_SETUP_DIR
 
+# shellcheck source=bin/lib/brew-helpers.sh disable=SC1091
+source "$(dirname "${BASH_SOURCE[0]:-$0}")/bin/lib/brew-helpers.sh"
+
 main() {
   (
     ensure_sudo_available
@@ -19,12 +22,17 @@ main() {
 
 ensure_directory_permissions() {
   ## workaround for recurring directory permission changes post-Sonoma upgrade
-  sudo chmod 0755 /opt /private/etc
+  guarded_system_chmod 0755 /opt /private/etc
 }
 
 ensure_homebrew() {
-  if ! command -v brew &>/dev/null; then
-    echo 'Ensuring Homebrew is installed...'
+  if command -v brew &>/dev/null; then
+    return
+  fi
+
+  echo 'Ensuring Homebrew is installed...'
+
+  if [[ "$(detect_account_type)" == "admin" ]]; then
     (
       ssh_config_fpath=~/.ssh/config
       if [ ! -f "${ssh_config_fpath}" ]; then
@@ -50,7 +58,12 @@ EOT
         'https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh'
       NONINTERACTIVE=1 "${BASH}" "${installer}"
     )
+    return
   fi
+
+  check_command_line_tools || exit 1
+  preflight_capability_check "$(detect_homebrew_prefix)" || exit 1
+  install_homebrew_official || exit 1
 }
 
 ensure_sudo_available() {
@@ -66,6 +79,8 @@ ensure_sudo_available() {
     sleep 60
     kill -0 "$$" || exit
   done 2>/dev/null &
+  SUDO_KEEPALIVE_PID=$!
+  trap 'kill "${SUDO_KEEPALIVE_PID}" 2>/dev/null' EXIT
 }
 
 add_bin_to_path() {

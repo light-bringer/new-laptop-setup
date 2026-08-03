@@ -70,7 +70,12 @@ ensure_sudo_available() {
   ## ensure sudo is fresh for unattended Homebrew installation
   if ! sudo -n true &>/dev/null; then
     echo >&2 'Prompting for sudo permissions...'
-    sudo -v
+    local rc=0
+    sudo -v || rc=$?
+    if [[ ${rc} -ne 0 ]]; then
+      echo >&2 "sudo -v failed (exit ${rc}). Possible causes: (a) this account does not have sudo access at all - contact your MDM administrator to grant sudo rights; (b) no interactive terminal is available for the password prompt - try running this directly in Terminal.app or iTerm rather than through another wrapper; (c) an incorrect password was entered."
+      exit "${rc}"
+    fi
   fi
 
   ## sudo refresh trick via https://github.com/geerlingguy/dotfiles/blob/8489a049/.osx#L32

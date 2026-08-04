@@ -23,6 +23,7 @@
         dest: /usr/local/bin/awsx
         state: link
         force: yes
+      become: yes
 
     - name: Copy awsx sample config if not present
       ansible.builtin.copy:

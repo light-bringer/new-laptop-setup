@@ -17,6 +17,13 @@
       register: awsx_help
       changed_when: false
 
+    - name: Symlink awsx to /usr/local/bin
+      ansible.builtin.file:
+        src: "{{ playbook_dir }}/bin/awsx"
+        dest: /usr/local/bin/awsx
+        state: link
+        force: yes
+
     - name: Copy awsx sample config if not present
       ansible.builtin.copy:
         src: "{{ playbook_dir }}/dotfiles/.awsx.yaml.example"

@@ -189,6 +189,11 @@ guarded_system_chmod() {
 # install_homebrew_official
 #   Runs the official Homebrew installer non-interactively.
 install_homebrew_official() {
+  # Refresh sudo credential right before the installer.  NONINTERACTIVE=1
+  # makes the installer use `sudo -n` (no prompt), which silently fails if
+  # the credential cached by ensure_sudo_available has gone stale.
+  sudo -v
+
   local rc=0
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || rc=$?
 

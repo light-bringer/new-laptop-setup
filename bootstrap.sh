@@ -56,6 +56,12 @@ EOT
         --show-error \
         --location \
         'https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh'
+      # Refresh sudo credential immediately before the installer runs.
+      # NONINTERACTIVE=1 makes the installer use `sudo -n` (no prompt),
+      # which fails if the credential cached by ensure_sudo_available has
+      # gone stale by the time we get here.
+      sudo -v
+
       NONINTERACTIVE=1 "${BASH}" "${installer}"
     )
     return

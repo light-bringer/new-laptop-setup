@@ -2,7 +2,7 @@
 - name: Configure Git user settings
   block:
     - name: Check for existing git user.name
-      community.general.git_config:
+      community.general.git_config_info:
         name: user.name
         scope: global
       register: git_user_name
@@ -19,10 +19,12 @@
         name: user.name
         value: "{{ git_name_prompt.user_input }}"
         scope: global
-      when: git_name_prompt.user_input is defined
+      when:
+        - git_name_prompt.user_input is defined
+        - git_name_prompt.user_input | trim != ''
 
     - name: Check for existing git user.email
-      community.general.git_config:
+      community.general.git_config_info:
         name: user.email
         scope: global
       register: git_user_email
@@ -39,4 +41,6 @@
         name: user.email
         value: "{{ git_email_prompt.user_input }}"
         scope: global
-      when: git_email_prompt.user_input is defined
+      when:
+        - git_email_prompt.user_input is defined
+        - git_email_prompt.user_input | trim != ''

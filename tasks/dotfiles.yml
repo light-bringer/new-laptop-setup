@@ -16,6 +16,7 @@
         path: '{{ ansible_env.HOME }}/.dotfiles-backup-{{ backup_timestamp }}/.config/opencode'
         state: directory
         mode: '0755'
+      tags: [opencode]
 
     - name: Backup existing dotfiles
       ansible.builtin.copy:
@@ -54,6 +55,7 @@
         path: '{{ ansible_env.HOME }}/.config/opencode'
         state: directory
         mode: '0755'
+      tags: [opencode]
 
     # ============================================
     # Git Configuration
@@ -178,6 +180,7 @@
         dest: '{{ ansible_env.HOME }}/.config/opencode/opencode.json'
         state: link
         force: yes
+      tags: [opencode]
 
     - name: Symlink oh-my-openagent.json
       ansible.builtin.file:
@@ -185,3 +188,4 @@
         dest: '{{ ansible_env.HOME }}/.config/opencode/oh-my-openagent.json'
         state: link
         force: yes
+      tags: [opencode]

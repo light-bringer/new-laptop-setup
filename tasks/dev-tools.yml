@@ -1,4 +1,11 @@
 ---
+# Terraform was removed from homebrew/core after HashiCorp's BUSL relicense.
+# It is now only available from the vendor's own tap, which must be added first.
+- name: Add HashiCorp tap
+  community.general.homebrew_tap:
+    name: hashicorp/tap
+    state: present
+
 - name: Install common development tools
   community.general.homebrew:
     name: "{{ item }}"
@@ -46,7 +53,7 @@
     # Container & Cloud Tools
     - kubectl         # Kubernetes CLI
     - helm            # Kubernetes package manager
-    - terraform       # Infrastructure as code
+    - hashicorp/tap/terraform  # Infrastructure as code
     - awscli          # AWS CLI
 
     # Other Utilities

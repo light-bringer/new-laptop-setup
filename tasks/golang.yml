@@ -39,9 +39,9 @@
         block: |
           # Go private module configuration (skip proxy for private repos)
           # Prevents slow `go mod tidy` by bypassing public proxy for private modules
-          export GOPRIVATE="github.com/vercara/*,gitlab.com/vercara/*"
-          export GONOPROXY="github.com/vercara/*,gitlab.com/vercara/*"
-          export GONOSUMDB="github.com/vercara/*,gitlab.com/vercara/*"
+          export GOPRIVATE="github.com/vercara/*,gitlab.com/vercara/*,github.com/netscout1/*,gitlab.com/netscout1/*"
+          export GONOPROXY="github.com/vercara/*,gitlab.com/vercara/*,github.com/netscout1/*,gitlab.com/netscout1/*"
+          export GONOSUMDB="github.com/vercara/*,gitlab.com/vercara/*,github.com/netscout1/*,gitlab.com/netscout1/*"
 
     - name: Verify Go installation
       ansible.builtin.command: go version

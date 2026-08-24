@@ -8,7 +8,7 @@
 
     - name: Prompt for default organization/username
       ansible.builtin.pause:
-        prompt: 'Enter your default organization/username for goto function [vercara]'
+        prompt: 'Enter your default organization/username for goto function [netscout1]'
       register: goto_user_prompt
 
     - name: Prompt for goto root directory
@@ -19,7 +19,7 @@
     - name: Set goto default values
       ansible.builtin.set_fact:
         goto_platform: "{{ goto_platform_prompt.user_input | default('gitlab', true) | lower }}"
-        goto_default_user: "{{ goto_user_prompt.user_input | default('vercara', true) }}"
+        goto_default_user: "{{ goto_user_prompt.user_input | default('netscout1', true) }}"
         goto_root: "{{ goto_root_prompt.user_input | default('~/dev/src', true) }}"
 
     - name: Set platform-specific values

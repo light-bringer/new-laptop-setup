@@ -86,3 +86,13 @@ if [ -d "$HOME/.docker/completions" ]; then
   autoload -Uz compinit
   compinit
 fi
+
+# ============================================
+# Machine-local overrides
+# ============================================
+# Ansible writes its generated blocks (GOPRIVATE from golang.yml, AWS_PROFILE
+# from aws-sso.yml) to ~/.zshrc.local. Nothing sourced that file, so those
+# exports silently never loaded. Sourcing it last also lets it override the repo.
+if [ -f "$HOME/.zshrc.local" ]; then
+  source "$HOME/.zshrc.local"
+fi

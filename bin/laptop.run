@@ -4,6 +4,9 @@
 set -eo pipefail
 [[ -n $DEBUG ]] && set -x
 
+# shellcheck source=bin/lib/brew-helpers.sh disable=SC1091
+source "$(dirname "${BASH_SOURCE[0]}")/lib/brew-helpers.sh"
+
 main() {
   repo_dir="$(dirname "${BASH_SOURCE[0]}")/.."
   cd "$repo_dir"
@@ -37,6 +40,8 @@ main() {
     sleep 60
     kill -0 "$$" || exit
   done 2>/dev/null &
+  SUDO_KEEPALIVE_PID=$!
+  trap 'kill "${SUDO_KEEPALIVE_PID}" 2>/dev/null' EXIT
 
   ## make `brew` available and all Homebrew-installed executables first in $PATH for subsequent steps
   ensure_homebrew
@@ -46,8 +51,10 @@ main() {
   ensure_jq_using_homebrew
   ensure_python_using_homebrew
   PATH="$(locate_ansible_python_bin):${PATH}"
-  # Use Homebrew Python 3.12 for better compatibility (3.14 has issues)
-  ANSIBLE_PYTHON_INTERPRETER="/opt/homebrew/opt/python@3.12/bin/python3.12"
+  # Use Homebrew Python 3.12 for better compatibility (3.14 has issues).
+  # Resolve the prefix portably (works on both Apple Silicon /opt/homebrew
+  # and Intel /usr/local) instead of hardcoding a single arch's path.
+  ANSIBLE_PYTHON_INTERPRETER="$(brew --prefix python@3.12 2>/dev/null || echo "$(detect_homebrew_prefix)/opt/python@3.12")/bin/python3.12"
   export PATH ANSIBLE_PYTHON_INTERPRETER
 
   ensure_ansible_dependencies
@@ -123,11 +130,16 @@ ensure_ansible_using_homebrew() {
 
 ensure_directory_permissions() {
   ## workaround for recurring directory permission changes post-Sonoma upgrade
-  sudo chmod 0755 /opt /private/etc
+  guarded_system_chmod 0755 /opt /private/etc
 
-  ## Pre-create Docker CLI plugins directory (required by Docker Desktop installation)
-  sudo mkdir -p /usr/local/cli-plugins
-  sudo chmod 0755 /usr/local/cli-plugins
+  ## Pre-create Docker CLI plugins directory (required by Docker Desktop installation).
+  ## This path is legacy/Intel-only (/usr/local); skip on Apple Silicon where it's unused.
+  if [[ "$(uname -m)" != "arm64" ]] || [[ "$(detect_homebrew_prefix)" == "/usr/local" ]]; then
+    if [[ ! -d /usr/local/cli-plugins ]]; then
+      sudo mkdir -p /usr/local/cli-plugins
+    fi
+    guarded_system_chmod 0755 /usr/local/cli-plugins
+  fi
 }
 
 ensure_jq_using_homebrew() {

@@ -7,6 +7,9 @@ set -eo pipefail
 : "${LAPTOP_SETUP_DIR:="$HOME/dev/new-laptop-setup"}"
 export LAPTOP_SETUP_DIR
 
+# shellcheck source=bin/lib/brew-helpers.sh disable=SC1091
+source "$(dirname "${BASH_SOURCE[0]:-$0}")/bin/lib/brew-helpers.sh"
+
 main() {
   (
     ensure_sudo_available
@@ -19,12 +22,17 @@ main() {
 
 ensure_directory_permissions() {
   ## workaround for recurring directory permission changes post-Sonoma upgrade
-  sudo chmod 0755 /opt /private/etc
+  guarded_system_chmod 0755 /opt /private/etc
 }
 
 ensure_homebrew() {
-  if ! command -v brew &>/dev/null; then
-    echo 'Ensuring Homebrew is installed...'
+  if command -v brew &>/dev/null; then
+    return
+  fi
+
+  echo 'Ensuring Homebrew is installed...'
+
+  if [[ "$(detect_account_type)" == "admin" ]]; then
     (
       ssh_config_fpath=~/.ssh/config
       if [ ! -f "${ssh_config_fpath}" ]; then
@@ -48,16 +56,44 @@ EOT
         --show-error \
         --location \
         'https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh'
+      # Refresh sudo credential immediately before the installer runs.
+      # NONINTERACTIVE=1 makes the installer use `sudo -n` (no prompt),
+      # which fails if the credential cached by ensure_sudo_available has
+      # gone stale by the time we get here.
+      sudo -v
+
       NONINTERACTIVE=1 "${BASH}" "${installer}"
     )
+    return
   fi
+
+  check_command_line_tools || exit 1
+  preflight_capability_check "$(detect_homebrew_prefix)" || exit 1
+  install_homebrew_official || exit 1
 }
 
 ensure_sudo_available() {
   ## ensure sudo is fresh for unattended Homebrew installation
   if ! sudo -n true &>/dev/null; then
     echo >&2 'Prompting for sudo permissions...'
-    sudo -v
+    local rc=0
+    sudo -v || rc=$?
+    if [[ ${rc} -ne 0 ]]; then
+      echo >&2 "sudo -v failed (exit ${rc}). Possible causes: (a) this account does not have sudo access at all - contact your MDM administrator to grant sudo rights; (b) no interactive terminal is available for the password prompt - try running this directly in Terminal.app or iTerm rather than through another wrapper; (c) an incorrect password was entered."
+
+      local detected_pam_tool=""
+      detected_pam_tool="$(detect_sudo_pam_interception)" || true
+      if [[ -n "${detected_pam_tool}" ]]; then
+        echo >&2 "Detected: ${detected_pam_tool} is intercepting sudo on this machine (found in /etc/pam.d/sudo)."
+        echo >&2 "This is a third-party security policy layer separate from standard sudoers. Your"
+        echo >&2 "organization's security/IT team needs to update the ${detected_pam_tool} policy to authorize"
+        echo >&2 "sudo for this account (scoped to mkdir/chown/chgrp/installer at minimum for Homebrew,"
+        echo >&2 "or broader temporary elevation for the install). This is NOT something this script"
+        echo >&2 "can resolve - it requires a policy change on the security tool's management console."
+      fi
+
+      exit "${rc}"
+    fi
   fi
 
   ## sudo refresh trick via https://github.com/geerlingguy/dotfiles/blob/8489a049/.osx#L32
@@ -66,6 +102,8 @@ ensure_sudo_available() {
     sleep 60
     kill -0 "$$" || exit
   done 2>/dev/null &
+  SUDO_KEEPALIVE_PID=$!
+  trap 'kill "${SUDO_KEEPALIVE_PID}" 2>/dev/null' EXIT
 }
 
 add_bin_to_path() {

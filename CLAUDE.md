@@ -12,7 +12,7 @@ Users need the following before running setup:
 
 ### System Requirements
 - macOS 12+ (Monterey or later)
-- Admin/sudo access
+- Sudo access required (standard, non-admin accounts on MDM-managed machines are supported)
 - Internet connection
 - 5GB+ free disk space
 

@@ -23,6 +23,31 @@ After the initial setup, you can update your configuration anytime:
 laptop.upgrade
 ```
 
+## Prerequisites
+
+- **Sudo Access**: Sudo access required (standard, non-admin accounts on MDM-managed machines are supported — see below)
+
+### Standard / MDM-managed accounts
+
+This setup works fine on a **standard (non-admin) macOS account** managed by an MDM, as long as sudo access is available:
+
+- **Homebrew** installs to the default prefix using the official installer, which only requires sudo for a few directory-ownership steps — no admin-group membership is needed.
+- **Cask GUI apps** (Docker Desktop, VSCode, etc.) install to `/Applications` via Homebrew's own internal sudo escalation, the same as any other cask install.
+- **Command Line Tools (CLT)** must already be installed before running this setup. The automation deliberately fails fast instead of auto-invoking `xcode-select --install`, since that command opens a GUI prompt that would hang indefinitely on an unattended or MDM-managed machine. If CLT is missing, install it via your MDM's Self Service (or manually) first.
+
+#### First-run validation on real MDM machines
+
+The following behaviors are implemented and unit-tested with mocked sudo/system calls, but have NOT been validated against a real MDM-restricted machine. If you hit an issue during your first run, these are the most likely culprits:
+
+1. `sudo mkdir -p <prefix>` succeeding under your specific MDM policy
+2. Full Homebrew installer completion under MDM (chown/chgrp of the prefix, `/etc/paths.d` writes)
+3. Cask `/Applications` write via Homebrew's internal sudo escalation actually succeeding with the keep-alive credential
+4. Command Line Tools presence — if missing, you'll need to install via your MDM's Self Service catalog or `xcode-select --install` manually before running this setup
+
+#### Known issue: third-party sudo policy tools (CyberArk EPM, BeyondTrust, etc.)
+
+Some enterprise security/MDM setups install a third-party PAM module into `/etc/pam.d/sudo` (e.g., CyberArk Endpoint Privilege Manager, BeyondTrust Privilege Management, Heimdal PEDM) that intercepts and gatekeeps `sudo` usage via a centrally-managed policy, completely separate from standard macOS sudoers configuration. If you see an error like `Execution blocked: <username> does not have Admin rights` when running this setup, this is very likely one of these tools blocking sudo — **not** a bug in this repo's scripts. This script now detects known signatures (e.g., CyberArk's PAM module in `/etc/pam.d/sudo`) and will print a more specific diagnostic message identifying the tool when detected. Resolution requires your organization's security/IT team to update that tool's policy to authorize sudo for your account (at minimum for `mkdir`, `chown`, `chgrp`, and the Homebrew installer). This is not something the setup script itself can work around.
+
 ## For Developers
 
 ### Initial Setup

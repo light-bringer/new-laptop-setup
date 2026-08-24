@@ -18,6 +18,8 @@ laptop.upgrade   # Update and run setup
 
 Before running the setup, prepare:
 
+- **Sudo Access**: Sudo access required (standard, non-admin accounts on MDM-managed machines are supported)
+
 1. **GitHub Personal Access Token**
    - Go to: https://github.com/settings/tokens
    - Click "Generate new token (classic)"
